@@ -1,0 +1,114 @@
+[
+  {
+    "_id": "candidate1",
+    "user": {
+      "_id": "candidate1",
+      "name": "John Doe",
+      "email": "candidate@example.com"
+    },
+    "resumeText": "John Doe is a software developer with 3 years of experience in JavaScript, React, Node.js, and MongoDB. He has worked on several web applications and is proficient in frontend and backend development.",
+    "resumeUrl": "/uploads/resume_john_doe.pdf",
+    "atsScore": 85,
+    "quizScore": 78,
+    "quizAnswers": [],
+    "cheatingDetected": false,
+    "proctoringLog": [],
+    "shortlisted": false,
+    "appliedJobs": [],
+    "skills": ["JavaScript", "React", "Node.js", "MongoDB", "HTML", "CSS"],
+    "experience": "Mid Level",
+    "education": [
+      {
+        "degree": "Bachelor of Science in Computer Science",
+        "institution": "University of Technology",
+        "year": "2020"
+      }
+    ],
+    "portfolio": "https://johndoe.dev",
+    "createdAt": "2024-01-15T10:00:00.000Z"
+  },
+  {
+    "_id": "candidate2",
+    "user": {
+      "_id": "candidate2",
+      "name": "Jane Smith",
+      "email": "jane@example.com"
+    },
+    "resumeText": "Jane Smith is a full-stack developer with 5 years of experience specializing in React, Python, and cloud technologies. She has led multiple projects and has excellent problem-solving skills.",
+    "resumeUrl": "/uploads/resume_jane_smith.pdf",
+    "atsScore": 92,
+    "quizScore": 88,
+    "quizAnswers": [],
+    "cheatingDetected": false,
+    "proctoringLog": [],
+    "shortlisted": true,
+    "appliedJobs": [],
+    "skills": ["React", "Python", "AWS", "Docker", "PostgreSQL", "TypeScript"],
+    "experience": "Senior Level",
+    "education": [
+      {
+        "degree": "Master of Science in Software Engineering",
+        "institution": "Tech University",
+        "year": "2018"
+      }
+    ],
+    "portfolio": "https://janesmith.dev",
+    "createdAt": "2024-01-20T14:30:00.000Z"
+  },
+  {
+    "_id": "candidate3",
+    "user": {
+      "_id": "candidate3",
+      "name": "Mike Johnson",
+      "email": "mike@example.com"
+    },
+    "resumeText": "Mike Johnson is a frontend developer with 2 years of experience in React, Vue.js, and modern CSS. He is passionate about creating beautiful user interfaces.",
+    "resumeUrl": "/uploads/resume_mike_johnson.pdf",
+    "atsScore": 75,
+    "quizScore": 0,
+    "quizAnswers": [],
+    "cheatingDetected": false,
+    "proctoringLog": [],
+    "shortlisted": false,
+    "appliedJobs": [],
+    "skills": ["React", "Vue.js", "CSS", "JavaScript", "HTML", "Sass"],
+    "experience": "Junior Level",
+    "education": [
+      {
+        "degree": "Bachelor of Science in Web Development",
+        "institution": "Design College",
+        "year": "2021"
+      }
+    ],
+    "portfolio": "https://mikejohnson.dev",
+    "createdAt": "2024-02-01T09:15:00.000Z"
+  },
+  {
+    "_id": "candidate4",
+    "user": {
+      "_id": "candidate4",
+      "name": "Sarah Wilson",
+      "email": "sarah@example.com"
+    },
+    "resumeText": "Sarah Wilson is a backend developer with 4 years of experience in Node.js, Java, and microservices architecture. She has worked on high-traffic applications.",
+    "resumeUrl": "/uploads/resume_sarah_wilson.pdf",
+    "atsScore": 88,
+    "quizScore": 45,
+    "quizAnswers": [],
+    "cheatingDetected": true,
+    "proctoringLog": ["Tab switch detected", "Window minimized"],
+    "shortlisted": false,
+    "appliedJobs": [],
+    "skills": ["Node.js", "Java", "Spring Boot", "MongoDB", "Kubernetes", "Redis"],
+    "experience": "Mid Level",
+    "education": [
+      {
+        "degree": "Bachelor of Science in Computer Science",
+        "institution": "Engineering University",
+        "year": "2019"
+      }
+    ],
+    "portfolio": "https://sarahwilson.dev",
+    "createdAt": "2024-02-10T16:45:00.000Z"
+  }
+]

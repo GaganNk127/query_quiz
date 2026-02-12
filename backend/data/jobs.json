@@ -1,0 +1,67 @@
+[
+  {
+    "_id": "job1",
+    "title": "Senior Frontend Developer",
+    "company": "TechCorp Solutions",
+    "type": "Full-time",
+    "location": "San Francisco, CA",
+    "salary": "$120k - $180k",
+    "description": "We are looking for an experienced Frontend Developer to join our team and help build amazing user interfaces.",
+    "requirements": ["5+ years of React experience", "Strong JavaScript skills", "Experience with TypeScript", "Knowledge of modern CSS"],
+    "postedBy": "recruiter1",
+    "status": "active",
+    "createdAt": "2024-01-15T10:00:00.000Z"
+  },
+  {
+    "_id": "job2",
+    "title": "Full Stack Engineer",
+    "company": "InnovateTech",
+    "type": "Full-time",
+    "location": "Remote",
+    "salary": "$100k - $150k",
+    "description": "Join our team as a Full Stack Engineer and work on cutting-edge projects with modern technologies.",
+    "requirements": ["Node.js experience", "React knowledge", "Database design skills", "Cloud deployment experience"],
+    "postedBy": "recruiter1",
+    "status": "active",
+    "createdAt": "2024-01-20T14:30:00.000Z"
+  },
+  {
+    "_id": "job3",
+    "title": "Backend Developer",
+    "company": "StartupX",
+    "type": "Full-time",
+    "location": "New York, NY",
+    "salary": "$90k - $130k",
+    "description": "Looking for a skilled Backend Developer to help build scalable server-side applications.",
+    "requirements": ["3+ years of backend experience", "Python or Node.js", "Database management", "API development"],
+    "postedBy": "recruiter1",
+    "status": "active",
+    "createdAt": "2024-02-01T09:15:00.000Z"
+  },
+  {
+    "_id": "job4",
+    "title": "React Developer",
+    "company": "TechCorp Solutions",
+    "type": "Contract",
+    "location": "Remote",
+    "salary": "$80k - $120k",
+    "description": "We need a React Developer for a 6-month contract project.",
+    "requirements": ["React expertise", "JavaScript proficiency", "State management", "Testing knowledge"],
+    "postedBy": "recruiter1",
+    "status": "active",
+    "createdAt": "2024-02-10T16:45:00.000Z"
+  },
+  {
+    "_id": "job5",
+    "title": "DevOps Engineer",
+    "company": "InnovateTech",
+    "type": "Full-time",
+    "location": "San Francisco, CA",
+    "salary": "$110k - $160k",
+    "description": "Join our DevOps team and help build and maintain our cloud infrastructure.",
+    "requirements": ["AWS experience", "Docker knowledge", "CI/CD pipelines", "Linux administration"],
+    "postedBy": "recruiter1",
+    "status": "active",
+    "createdAt": "2024-02-15T11:20:00.000Z"
+  }
+]
