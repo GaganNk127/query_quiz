@@ -1,5 +1,7 @@
 import express from 'express';
 import mongoose from 'mongoose';
+import path from 'node:path';
+import fs from 'node:fs';
 import Candidate from '../models/Candidate.js';
 import User from '../models/User.js';
 import { authenticate, authorize } from '../middleware/auth.js';
@@ -9,22 +11,22 @@ import * as atsService from '../services/atsService.js';
 const router = express.Router();
 
 // Upload resume and calculate ATS score
-router.post('/upload-resume', 
-  authenticate, 
-  authorize('candidate'), 
-  uploadResume, 
+router.post('/upload-resume',
+  authenticate,
+  authorize('candidate'),
+  uploadResume,
   handleUploadError,
   async (req, res) => {
     try {
       const { resumeText, jobId } = req.body;
-      
+
       if (!resumeText) {
         return res.status(400).json({ message: 'Resume text is required' });
       }
 
       // Find or create candidate profile
       let candidate = await Candidate.findOne({ user: req.user._id });
-      
+
       if (!candidate) {
         candidate = new Candidate({ user: req.user._id });
       }
@@ -37,7 +39,7 @@ router.post('/upload-resume',
       if (jobId) {
         const Job = (await import('../models/Job.js')).default;
         const job = await Job.findById(jobId);
-        
+
         if (job) {
           candidate.atsScore = await atsService.calculateATSScore(resumeText, job.description);
         }
@@ -78,12 +80,12 @@ router.get('/recruiter/stats', authenticate, authorize('recruiter'), async (req,
 
     const totalCandidates = candidates.length;
     const shortlistedCandidates = candidates.filter(c => c.shortlisted).length;
-    const recentApplications = candidates.filter(c => 
+    const recentApplications = candidates.filter(c =>
       c.appliedJobs.some(app => new Date(app.appliedAt) > new Date(Date.now() - 7 * 24 * 60 * 60 * 1000))
     ).length;
 
-    const averageAtsScore = candidates.length > 0 
-      ? candidates.reduce((sum, c) => sum + c.atsScore, 0) / candidates.length 
+    const averageAtsScore = candidates.length > 0
+      ? candidates.reduce((sum, c) => sum + c.atsScore, 0) / candidates.length
       : 0;
 
     res.json({
@@ -180,17 +182,17 @@ router.get('/ats-passed', authenticate, authorize('recruiter'), async (req, res)
   try {
     const { page = 1, limit = 10, minScore = 60 } = req.query;
 
-    const candidates = await Candidate.find({ 
+    const candidates = await Candidate.find({
       atsScore: { $gte: parseInt(minScore) },
       cheatingStatus: { $ne: 'rejected_cheating' }
     })
-    .populate('user', 'name email profile')
-    .sort({ atsScore: -1 })
-    .limit(limit * 1)
-    .skip((page - 1) * limit)
-    .exec();
+      .populate('user', 'name email profile')
+      .sort({ atsScore: -1 })
+      .limit(limit * 1)
+      .skip((page - 1) * limit)
+      .exec();
 
-    const total = await Candidate.countDocuments({ 
+    const total = await Candidate.countDocuments({
       atsScore: { $gte: parseInt(minScore) },
       cheatingStatus: { $ne: 'rejected_cheating' }
     });
@@ -280,19 +282,19 @@ router.get('/shortlisted', authenticate, authorize('recruiter'), async (req, res
   try {
     const { page = 1, limit = 10 } = req.query;
 
-    const candidates = await Candidate.find({ 
+    const candidates = await Candidate.find({
       shortlisted: true,
-      shortlistedBy: req.user._id 
+      shortlistedBy: req.user._id
     })
-    .populate('user', 'name email profile')
-    .sort({ shortlistedAt: -1 })
-    .limit(limit * 1)
-    .skip((page - 1) * limit)
-    .exec();
+      .populate('user', 'name email profile')
+      .sort({ shortlistedAt: -1 })
+      .limit(limit * 1)
+      .skip((page - 1) * limit)
+      .exec();
 
-    const total = await Candidate.countDocuments({ 
+    const total = await Candidate.countDocuments({
       shortlisted: true,
-      shortlistedBy: req.user._id 
+      shortlistedBy: req.user._id
     });
 
     res.json({
@@ -324,6 +326,35 @@ router.get('/:id', authenticate, authorize('recruiter'), async (req, res) => {
   } catch (error) {
     console.error('Get candidate details error:', error);
     res.status(500).json({ message: 'Server error fetching candidate details' });
+  }
+});
+
+// Download candidate resume (recruiter only)
+router.get('/:id/resume', authenticate, authorize('recruiter'), async (req, res) => {
+  try {
+    const candidate = await Candidate.findById(req.params.id);
+
+    if (!candidate || !candidate.resumeUrl) {
+      return res.status(404).json({ message: 'Resume not found' });
+    }
+
+    // Convert relative URL to absolute path
+    // resumeUrl is stored as /uploads/filename
+    const fileName = candidate.resumeUrl.split('/').pop();
+    const filePath = path.join(process.cwd(), 'uploads', fileName);
+
+    // Check if file exists
+    try {
+      await fs.promises.access(filePath);
+    } catch (err) {
+      console.error('Resume file not found on disk:', filePath);
+      return res.status(404).json({ message: 'Resume file not found on server' });
+    }
+
+    res.download(filePath, `resume_${candidate._id}.pdf`);
+  } catch (error) {
+    console.error('Download resume error:', error);
+    res.status(500).json({ message: 'Server error downloading resume' });
   }
 });
 

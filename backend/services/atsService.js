@@ -121,16 +121,16 @@ export const calculateATSScore = async (resumeText, jobDescription) => {
     // 1. Keyword Matching (30% weight)
     const jobKeywords = extractJobKeywords(jobDescription);
     const resumeKeywords = extractResumeKeywords(resumeText);
-    const keywordScore = calculateKeywordMatch(jobKeywords, resumeKeywords);
+    const keywordScore = await calculateKeywordMatch(jobKeywords, resumeKeywords);
     scores.keywordMatch = keywordScore;
 
-    // 2. Skill Matching (25% weight)
+    // 2. Skill Matching (15% weight)
     const requiredSkills = extractSkills(jobDescription);
     const candidateSkills = extractSkills(resumeText);
     const skillScore = calculateSkillMatch(requiredSkills, candidateSkills);
     scores.skillMatch = skillScore;
 
-    // 3. Experience Matching (20% weight)
+    // 3. Experience Matching (15% weight)
     const experienceScore = calculateExperienceMatch(resumeText, jobDescription);
     scores.experienceMatch = experienceScore;
 
@@ -138,7 +138,7 @@ export const calculateATSScore = async (resumeText, jobDescription) => {
     const educationScore = calculateEducationMatch(resumeText, jobDescription);
     scores.educationMatch = educationScore;
 
-    // 5. Resume Format Quality (10% weight)
+    // 5. Resume Format Quality (5% weight)
     const formatScore = calculateFormatScore(resumeText);
     scores.formatScore = formatScore;
 
@@ -146,21 +146,19 @@ export const calculateATSScore = async (resumeText, jobDescription) => {
     const lengthScore = calculateLengthScore(resumeText);
     scores.lengthScore = lengthScore;
 
-    // 7. Semantic Similarity (30% weight - high impact because it's AI)
-    // Recalculate weights:
-    // Keyword: 20%, Skill: 20%, Experience: 15%, Education: 10%, Format: 5%, Length: 5%, Semantic: 25%
+    // 7. Semantic Similarity (20% weight)
     const semanticScore = await getSemanticScore(resumeText, jobDescription);
     scores.semanticMatch = semanticScore;
 
     // Calculate weighted final score
     const finalScore = Math.round(
-      scores.keywordMatch * 0.20 +
-      scores.skillMatch * 0.20 +
+      scores.keywordMatch + // Already weighted to 30
+      scores.skillMatch * 0.15 +
       scores.experienceMatch * 0.15 +
       scores.educationMatch * 0.10 +
       scores.formatScore * 0.05 +
       scores.lengthScore * 0.05 +
-      scores.semanticMatch * 0.25
+      scores.semanticMatch * 0.20
     );
 
     // Ensure score is between 0 and 100
@@ -238,15 +236,17 @@ const isCommonWord = (word) => {
   return commonWords.includes(word);
 };
 
-// Calculate keyword match score
-const calculateKeywordMatch = (jobKeywords, resumeKeywords) => {
-  if (jobKeywords.length === 0) return 0;
+// Calculate keyword match score using Word2Vec/Embeddings (via USE)
+const calculateKeywordMatch = async (jobKeywords, resumeKeywords) => {
+  if (jobKeywords.length === 0 || resumeKeywords.length === 0) return 0;
 
-  const matches = jobKeywords.filter(keyword =>
-    resumeKeywords.some(resumeWord => resumeWord.includes(keyword) || keyword.includes(resumeWord))
-  );
+  // Use getSemanticScore which uses Universal Sentence Encoder (Embeddings)
+  // This provides "Word2Vec" style semantic similarity
+  const semanticScore = await getSemanticScore(jobKeywords.join(' '), resumeKeywords.join(' '));
 
-  return Math.min(100, (matches.length / jobKeywords.length) * 100);
+  // Multiply by 0.3 (30%) to get the weighted score
+  // Since semanticScore is 0-100, we divide by 100 and multiply by 30
+  return (semanticScore / 100) * 30;
 };
 
 // Calculate skill match score
@@ -364,7 +364,7 @@ export const getDetailedATSScore = async (resumeText, jobDescription) => {
     // Calculate individual scores
     const jobKeywords = extractJobKeywords(jobDescription);
     const resumeKeywords = extractResumeKeywords(resumeText);
-    const keywordScore = calculateKeywordMatch(jobKeywords, resumeKeywords);
+    const keywordScore = await calculateKeywordMatch(jobKeywords, resumeKeywords);
 
     const requiredSkills = extractSkills(jobDescription);
     const candidateSkills = extractSkills(resumeText);
@@ -376,18 +376,18 @@ export const getDetailedATSScore = async (resumeText, jobDescription) => {
     const lengthScore = calculateLengthScore(resumeText);
 
     // Calculate weighted final score
-    // 7. Semantic Similarity (25% weight)
+    // 7. Semantic Similarity (20% weight)
     const semanticScore = await getSemanticScore(resumeText, jobDescription);
 
     // Calculate weighted final score
     const totalScore = Math.round(
-      keywordScore * 0.20 +
-      skillScore * 0.20 +
+      keywordScore +
+      skillScore * 0.15 +
       experienceScore * 0.15 +
       educationScore * 0.10 +
       formatScore * 0.05 +
       lengthScore * 0.05 +
-      semanticScore * 0.25
+      semanticScore * 0.20
     );
 
     // Generate detailed breakdown
@@ -395,14 +395,14 @@ export const getDetailedATSScore = async (resumeText, jobDescription) => {
       keywordMatch: {
         score: Math.round(keywordScore),
         weight: 30,
-        details: `Matched ${Math.round(keywordScore * jobKeywords.length / 100)} out of ${jobKeywords.length} key terms from job description`,
+        details: `Keyword similarity score is ${Math.round((keywordScore / 30) * 100)}% based on cosine similarity logic.`,
         matchedKeywords: jobKeywords.filter(keyword =>
           resumeKeywords.some(resumeWord => resumeWord.includes(keyword) || keyword.includes(resumeWord))
         ).slice(0, 10)
       },
       skillMatch: {
         score: Math.round(skillScore),
-        weight: 25,
+        weight: 15,
         details: `Found ${Math.round(skillScore * requiredSkills.length / 100)} out of ${requiredSkills.length} required skills`,
         matchedSkills: requiredSkills.filter(skill =>
           candidateSkills.some(candidateSkill =>
@@ -413,7 +413,7 @@ export const getDetailedATSScore = async (resumeText, jobDescription) => {
       },
       experienceMatch: {
         score: Math.round(experienceScore),
-        weight: 20,
+        weight: 15,
         details: getExperienceDetails(resumeText, jobDescription)
       },
       educationMatch: {
@@ -423,7 +423,7 @@ export const getDetailedATSScore = async (resumeText, jobDescription) => {
       },
       formatScore: {
         score: Math.round(formatScore),
-        weight: 10,
+        weight: 5,
         details: getFormatDetails(resumeText)
       },
       lengthScore: {
@@ -433,7 +433,7 @@ export const getDetailedATSScore = async (resumeText, jobDescription) => {
       },
       semanticMatch: {
         score: Math.round(semanticScore),
-        weight: 25,
+        weight: 20,
         details: `AI analysis indicates ${semanticScore}% semantic relevance between resume and job description.`
       }
     };

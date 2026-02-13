@@ -208,6 +208,18 @@ export const sendProctoringAlertEmail = async (recruiterEmail, candidateName, jo
   await sendEmail(recruiterEmail, subject, html);
 };
 
+// 12. Custom Email
+export const sendCustomEmail = async (to, subject, body = '') => {
+  const html = `
+    <div style="font-family: Arial, sans-serif; color: #333; line-height: 1.6;">
+      ${(body || '').replace(/\n/g, '<br>')}
+      <br><br>
+      <p>Best regards,<br>The SmartRecruit AI Team</p>
+    </div>
+  `;
+  return await sendEmail(to, subject, html);
+};
+
 export default {
   sendEmail,
   sendWelcomeEmail,
@@ -219,6 +231,6 @@ export default {
   sendRejectionEmail,
   sendInterviewScheduledEmail,
   sendOfferExtendedEmail,
-  sendCustomEmail,
-  sendProctoringAlertEmail
+  sendProctoringAlertEmail,
+  sendCustomEmail
 };

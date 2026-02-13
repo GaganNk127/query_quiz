@@ -1,11 +1,11 @@
 import { useState, useEffect } from 'react'
 import { useParams, Link } from 'react-router-dom'
-import { 
-  User, 
-  Mail, 
-  Phone, 
-  MapPin, 
-  Globe, 
+import {
+  User,
+  Mail,
+  Phone,
+  MapPin,
+  Globe,
   Linkedin,
   Github,
   Download,
@@ -34,7 +34,7 @@ export default function CandidateDetails() {
   const [emailModalOpen, setEmailModalOpen] = useState(false)
   const [emailType, setEmailType] = useState('shortlist')
   const [customMessage, setCustomMessage] = useState('')
-  
+
   const { sendShortlistEmail, sendRejectionEmail, sendCustomEmail } = useEmailService()
 
   useEffect(() => {
@@ -57,10 +57,10 @@ export default function CandidateDetails() {
   const handleShortlist = async () => {
     try {
       await axios.post(`/api/candidates/${id}/shortlist`)
-      
+
       // Update local state
       setCandidate(prev => ({ ...prev, shortlisted: true }))
-      
+
       // Send email notification
       await sendShortlistEmail(
         candidate.user.email,
@@ -68,7 +68,7 @@ export default function CandidateDetails() {
         'Applied Position',
         'Your Company'
       )
-      
+
       toast.success('Candidate shortlisted successfully!')
     } catch (error) {
       console.error('Error shortlisting candidate:', error)
@@ -95,12 +95,11 @@ export default function CandidateDetails() {
           break
         case 'custom':
           emailFunction = sendCustomEmail
-          emailArgs = ['custom_template', {
-            to_email: candidate.user.email,
-            candidate_name: candidate.user.name,
-            message: customMessage,
-            current_year: new Date().getFullYear()
-          }]
+          emailArgs = [
+            candidate.user.email,
+            `Message from Recruiter regarding your application`,
+            customMessage
+          ]
           break
         default:
           return
@@ -119,7 +118,7 @@ export default function CandidateDetails() {
       const response = await axios.get(`/api/candidates/${id}/resume`, {
         responseType: 'blob'
       })
-      
+
       const url = window.URL.createObjectURL(new Blob([response.data]))
       const link = document.createElement('a')
       link.href = url
@@ -222,7 +221,7 @@ export default function CandidateDetails() {
               <Download className="h-4 w-4" />
               <span>Resume</span>
             </button>
-            
+
             <button
               onClick={() => {
                 setEmailType('shortlist')
@@ -233,7 +232,7 @@ export default function CandidateDetails() {
             >
               {candidate.shortlisted ? 'Shortlisted' : 'Shortlist'}
             </button>
-            
+
             <button
               onClick={() => {
                 setEmailType('custom')
@@ -304,11 +303,10 @@ export default function CandidateDetails() {
               <button
                 key={tab}
                 onClick={() => setActiveTab(tab)}
-                className={`py-4 px-1 border-b-2 font-medium text-sm capitalize ${
-                  activeTab === tab
+                className={`py-4 px-1 border-b-2 font-medium text-sm capitalize ${activeTab === tab
                     ? 'border-primary text-primary'
                     : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                }`}
+                  }`}
               >
                 {tab}
               </button>
@@ -373,7 +371,7 @@ export default function CandidateDetails() {
                       </div>
                     </div>
                   )}
-                  
+
                   {candidate.experience && (
                     <div>
                       <h4 className="font-medium text-gray-700 dark:text-gray-300 mb-2">
@@ -384,7 +382,7 @@ export default function CandidateDetails() {
                       </p>
                     </div>
                   )}
-                  
+
                   {candidate.user?.profile?.bio && (
                     <div>
                       <h4 className="font-medium text-gray-700 dark:text-gray-300 mb-2">
@@ -429,7 +427,7 @@ export default function CandidateDetails() {
               <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
                 Resume Analysis
               </h3>
-              
+
               <div className="bg-gray-50 dark:bg-gray-900 rounded-lg p-6">
                 <h4 className="font-medium text-gray-900 dark:text-white mb-3">
                   Extracted Text Preview
@@ -441,7 +439,7 @@ export default function CandidateDetails() {
                   </pre>
                 </div>
               </div>
-              
+
               <div className="flex justify-center">
                 <button
                   onClick={downloadResume}
@@ -459,7 +457,7 @@ export default function CandidateDetails() {
               <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
                 Quiz Results
               </h3>
-              
+
               {candidate.quizAnswers && candidate.quizAnswers.length > 0 ? (
                 <div className="space-y-4">
                   {candidate.quizAnswers.map((answer, index) => (
@@ -468,11 +466,10 @@ export default function CandidateDetails() {
                         <h4 className="font-medium text-gray-900 dark:text-white">
                           Question {index + 1}
                         </h4>
-                        <span className={`px-2 py-1 rounded text-xs font-medium ${
-                          answer.isCorrect 
+                        <span className={`px-2 py-1 rounded text-xs font-medium ${answer.isCorrect
                             ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200'
                             : 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200'
-                        }`}>
+                          }`}>
                           {answer.isCorrect ? 'Correct' : 'Incorrect'}
                         </span>
                       </div>
@@ -505,7 +502,7 @@ export default function CandidateDetails() {
               <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
                 Proctoring Report
               </h3>
-              
+
               {candidate.proctoringLog && candidate.proctoringLog.length > 0 ? (
                 <div className="space-y-4">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -526,7 +523,7 @@ export default function CandidateDetails() {
                         ))}
                       </div>
                     </div>
-                    
+
                     <div>
                       <h4 className="font-medium text-gray-900 dark:text-white mb-3">
                         Compliance Score
@@ -538,7 +535,7 @@ export default function CandidateDetails() {
                       </div>
                     </div>
                   </div>
-                  
+
                   <div>
                     <h4 className="font-medium text-gray-900 dark:text-white mb-3">
                       Proctoring Events
@@ -580,7 +577,7 @@ export default function CandidateDetails() {
             <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
               Send Email to {candidate.user?.name}
             </h3>
-            
+
             <div className="space-y-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
@@ -596,7 +593,7 @@ export default function CandidateDetails() {
                   <option value="custom">Custom Message</option>
                 </select>
               </div>
-              
+
               {emailType === 'custom' && (
                 <div>
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
@@ -612,7 +609,7 @@ export default function CandidateDetails() {
                 </div>
               )}
             </div>
-            
+
             <div className="flex justify-end space-x-3 mt-6">
               <button
                 onClick={() => setEmailModalOpen(false)}
