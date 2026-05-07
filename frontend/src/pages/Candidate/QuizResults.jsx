@@ -367,7 +367,9 @@ export default function QuizResults() {
                 Violations Detected
               </h3>
               <div className="space-y-2 text-sm">
-                {Object.entries(proctoringStats.violations).map(([type, count]) => (
+                {Object.entries(proctoringStats.violations)
+                  .filter(([type]) => type !== 'no_face' && type !== 'head_turned')
+                  .map(([type, count]) => (
                   <div key={type} className="flex justify-between">
                     <span className="text-gray-600 dark:text-gray-400 capitalize">
                       {type.replace('_', ' ')}

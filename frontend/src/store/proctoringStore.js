@@ -31,9 +31,7 @@ export const useProctoringStore = create((set, get) => ({
   video: null,
   proctoringWarnings: [],
   violationCount: {
-    no_face: 0,
     multiple_faces: 0,
-    head_turned: 0,
     tab_switch: 0,
     window_minimize: 0,
     prohibited_object: 0
@@ -169,37 +167,9 @@ export const useProctoringStore = create((set, get) => ({
       set({ lastFaceDetection: detection })
 
       // Check for violations
-      if (predictions.length === 0) {
-        // No face detected
-        if (!lastFaceDetection || lastFaceDetection.faceCount > 0) {
-          logViolation('no_face', 'No face detected')
-        }
-      } else if (predictions.length > 1) {
+      if (predictions.length > 1) {
         // Multiple faces detected
         logViolation('multiple_faces', 'Multiple faces detected')
-      } else {
-        // Single face detected - check if it's looking away
-        const face = predictions[0]
-        if (face.annotations) {
-          const { leftEye, rightEye, nose } = face.annotations
-
-          if (leftEye && rightEye && nose) {
-            // Simple head pose estimation (can be enhanced)
-            const eyeCenter = [
-              (leftEye[0][0] + rightEye[0][0]) / 2,
-              (leftEye[0][1] + rightEye[0][1]) / 2
-            ]
-            const nosePos = nose[0]
-
-            // Check if head is turned (simplified)
-            const headTurnThreshold = 50
-            const headTurned = Math.abs(eyeCenter[0] - nosePos[0]) > headTurnThreshold
-
-            if (headTurned) {
-              logViolation('head_turned', 'Head turned away from screen')
-            }
-          }
-        }
       }
     } catch (error) {
       console.error('Face detection error:', error)
@@ -295,9 +265,7 @@ export const useProctoringStore = create((set, get) => ({
 
     // Auto-submit if any violation threshold is exceeded
     return (
-      violations.no_face >= 3 ||
       violations.multiple_faces >= 2 ||
-      violations.head_turned >= 2 ||
       violations.tab_switch >= 1 ||
       violations.window_minimize >= 1 ||
       violations.prohibited_object >= 1
@@ -309,15 +277,10 @@ export const useProctoringStore = create((set, get) => ({
       return
     }
 
-    // This would be called when cheating is detected
-    const { completeQuiz } = useQuizStore.getState()
-    completeQuiz()
-
-    // Show alert to user
-    alert('Quiz has been auto-submitted due to proctoring violations.')
-
-    // Stop proctoring
-    get().stopProctoring()
+    console.log('Proctoring violation threshold reached. Triggering auto-submission...')
+    
+    // Stop monitoring to prevent further violations during submission
+    get().stopFaceMonitoring()
   },
 
   handleVisibilityChange: () => {
@@ -381,9 +344,7 @@ export const useProctoringStore = create((set, get) => ({
       video: null,
       proctoringWarnings: [],
       violationCount: {
-        no_face: 0,
         multiple_faces: 0,
-        head_turned: 0,
         tab_switch: 0,
         window_minimize: 0,
         prohibited_object: 0

@@ -39,7 +39,9 @@ export default function QuizInterface() {
     startProctoring,
     stopProctoring,
     logProctoringEvent,
-    setVideoElement
+    setVideoElement,
+    violationCount,
+    shouldAutoSubmit
   } = useProctoringStore()
 
   const [selectedAnswer, setSelectedAnswer] = useState(null)
@@ -53,6 +55,13 @@ export default function QuizInterface() {
   const videoRef = useRef(null)
   const streamRef = useRef(null)
   const timerRef = useRef(null)
+
+  // Watch for proctoring violations
+  useEffect(() => {
+    if (isQuizActive && shouldAutoSubmit(violationCount)) {
+      handleAutoSubmit()
+    }
+  }, [violationCount, isQuizActive])
 
   // Get quiz data from navigation state or fetch it
   useEffect(() => {
@@ -283,6 +292,46 @@ export default function QuizInterface() {
       })
     } catch (error) {
       console.error('Error completing quiz:', error)
+    }
+  }
+
+  const handleAutoSubmit = async () => {
+    try {
+      // Calculate final score with current answers
+      let correctCount = 0
+      answers.forEach(answer => {
+        const question = quizQuestions.find(q => q.id === answer.questionId)
+        if (question && answer.selectedAnswer === question.correct) {
+          correctCount++
+        }
+      })
+
+      const score = Math.round((correctCount / quizQuestions.length) * 100)
+
+      // Submit to backend as well
+      await axios.post('/api/quiz/complete', {
+        quizId: quizData?.id,
+        answers: answers,
+        score: score,
+        status: 'auto_submitted_cheating'
+      }).catch(err => console.error('Auto-submit backend error:', err))
+
+      await completeQuiz(score, answers)
+      stopProctoring()
+      stopCamera()
+
+      alert('Quiz has been auto-submitted due to multiple proctoring violations.')
+
+      navigate('/candidate/quiz-results', {
+        state: {
+          score,
+          answers,
+          totalQuestions: quizQuestions.length,
+          autoSubmitted: true
+        }
+      })
+    } catch (error) {
+      console.error('Error in auto-submission:', error)
     }
   }
 

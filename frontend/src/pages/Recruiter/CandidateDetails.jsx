@@ -511,7 +511,9 @@ export default function CandidateDetails() {
                         Violations Summary
                       </h4>
                       <div className="space-y-2">
-                        {Object.entries(candidate.proctoringStats?.violations || {}).map(([type, count]) => (
+                        {Object.entries(candidate.proctoringStats?.violations || {})
+                          .filter(([type]) => type !== 'no_face' && type !== 'head_turned')
+                          .map(([type, count]) => (
                           <div key={type} className="flex justify-between">
                             <span className="text-gray-600 dark:text-gray-400 capitalize">
                               {type.replace('_', ' ')}
@@ -541,7 +543,9 @@ export default function CandidateDetails() {
                       Proctoring Events
                     </h4>
                     <div className="space-y-2 max-h-64 overflow-y-auto">
-                      {candidate.proctoringLog.map((event, index) => (
+                      {candidate.proctoringLog
+                        .filter(event => event.type !== 'no_face' && event.type !== 'head_turned')
+                        .map((event, index) => (
                         <div key={index} className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-900 rounded">
                           <div className="flex items-center space-x-3">
                             <AlertTriangle className="h-4 w-4 text-yellow-500" />

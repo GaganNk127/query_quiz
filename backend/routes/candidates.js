@@ -107,63 +107,88 @@ router.get('/recruiter/stats', authenticate, authorize('recruiter'), async (req,
 // Get all candidates (recruiter only)
 router.get('/', authenticate, authorize('recruiter'), async (req, res) => {
   try {
-    const { page = 1, limit = 10, jobId, minScore = 0 } = req.query;
+    const { 
+      page = 1, 
+      limit = 10, 
+      jobId, 
+      atsScoreMin = 0, 
+      quizScoreMin = 0,
+      search = '',
+      shortlisted = 'false',
+      sortBy = 'atsScore',
+      sortOrder = 'desc'
+    } = req.query;
+
+    console.log(`[DEBUG] Fetching candidates for recruiter ${req.user._id}`);
+    console.log(`[DEBUG] Filters: jobId=${jobId}, atsScoreMin=${atsScoreMin}, quizScoreMin=${quizScoreMin}, search=${search}`);
 
     // Build base query
-    let query = {
-      cheatingStatus: { $ne: 'rejected_cheating' }
-      // 🔥 REMOVED: resumeText: { $exists: true, $ne: '' } 
-      // (Relaxing this to see candidates even if resume is not processed)
-    };
+    let query = {};
 
     // Restrict candidates to those who applied to the recruiter's jobs
     const Job = (await import('../models/Job.js')).default;
     const recruiterJobs = await Job.find({ postedBy: req.user._id }).select('_id');
-    const recruiterJobIds = recruiterJobs.map(job => job._id.toString());
     const recruiterJobObjectIds = recruiterJobs.map(job => job._id);
 
     if (jobId) {
-      // Ensure recruiter can only view their job applicants
-      if (!recruiterJobIds.includes(jobId.toString())) {
-        return res.json({
-          candidates: [],
-          pagination: {
-            current: page,
-            pages: 0,
-            total: 0
-          }
-        });
-      }
       query['appliedJobs.job'] = new mongoose.Types.ObjectId(jobId);
     } else {
-      if (recruiterJobIds.length === 0) {
+      if (recruiterJobObjectIds.length === 0) {
         return res.json({
           candidates: [],
-          pagination: {
-            current: page,
-            pages: 0,
-            total: 0
-          }
+          pagination: { current: page, pages: 0, total: 0 }
         });
       }
       query['appliedJobs.job'] = { $in: recruiterJobObjectIds };
     }
 
+    // Filter by ATS score
+    if (parseInt(atsScoreMin) > 0) {
+      query.atsScore = { $gte: parseInt(atsScoreMin) };
+    }
 
-    // Filter by ATS score if specified
-    if (minScore > 0) {
-      query.atsScore = { $gte: parseInt(minScore) };
+    // Filter by Quiz score
+    if (parseInt(quizScoreMin) > 0) {
+      query.quizScore = { $gte: parseInt(quizScoreMin) };
+    }
+
+    // Filter by Shortlisted status
+    if (shortlisted === 'true') {
+      query.shortlisted = true;
+    }
+
+    // Filter by Search (Name, Email)
+    if (search) {
+      const users = await User.find({
+        $or: [
+          { name: { $regex: search, $options: 'i' } },
+          { email: { $regex: search, $options: 'i' } }
+        ]
+      }).select('_id');
+      const userIds = users.map(u => u._id);
+      query.user = { $in: userIds };
+    }
+
+    console.log('[DEBUG] Final Query:', JSON.stringify(query));
+
+    // Determine Sort
+    const sort = {};
+    if (sortBy === 'createdAt') {
+      sort.createdAt = sortOrder === 'desc' ? -1 : 1;
+    } else {
+      sort[sortBy] = sortOrder === 'desc' ? -1 : 1;
     }
 
     const candidates = await Candidate.find(query)
       .populate('user', 'name email profile')
       .populate('appliedJobs.job', 'title location type')
-      .sort({ 'appliedJobs.appliedAt': -1, atsScore: -1 })
+      .sort(sort)
       .limit(limit * 1)
       .skip((page - 1) * limit)
       .exec();
 
     const total = await Candidate.countDocuments(query);
+    console.log(`[DEBUG] Found ${candidates.length} candidates, Total ${total}`);
 
     res.json({
       candidates,

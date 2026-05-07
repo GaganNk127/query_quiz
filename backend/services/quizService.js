@@ -114,14 +114,12 @@ export const detectCheating = (proctoringLog) => {
   if (!proctoringLog || proctoringLog.length === 0) return false;
 
   const recentEvents = proctoringLog.filter(
-    event => Date.now() - new Date(event.timestamp).getTime() < 300000 // Last 5 minutes
+    event => Date.now() - new Date(event.timestamp).getTime() < 600000 // Last 10 minutes
   );
 
   // Count different types of violations
   const violations = {
-    no_face: recentEvents.filter(e => e.type === 'no_face').length,
     multiple_faces: recentEvents.filter(e => e.type === 'multiple_faces').length,
-    head_turned: recentEvents.filter(e => e.type === 'head_turned' && e.duration > 3).length,
     tab_switch: recentEvents.filter(e => e.type === 'tab_switch').length,
     window_minimize: recentEvents.filter(e => e.type === 'window_minimize').length,
     prohibited_object: recentEvents.filter(e => e.type === 'prohibited_object').length
@@ -129,12 +127,10 @@ export const detectCheating = (proctoringLog) => {
 
   // Cheating detection rules
   const cheatingRules = [
-    violations.no_face >= 3,
-    violations.multiple_faces >= 2,
-    violations.head_turned >= 2,
-    violations.tab_switch >= 1,
-    violations.window_minimize >= 1,
-    violations.prohibited_object >= 1
+    violations.multiple_faces >= 3,
+    violations.tab_switch >= 3,
+    violations.window_minimize >= 3,
+    violations.prohibited_object >= 2
   ];
 
   return cheatingRules.some(rule => rule);
