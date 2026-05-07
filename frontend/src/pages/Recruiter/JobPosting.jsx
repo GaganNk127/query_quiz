@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { 
   Briefcase, 
@@ -14,9 +14,11 @@ import {
 } from 'lucide-react'
 import toast from 'react-hot-toast'
 import axios from 'axios'
+import { useAuth } from '../../contexts/AuthContext'
 
 export default function JobPosting() {
   const navigate = useNavigate()
+  const { user } = useAuth()
   const [loading, setLoading] = useState(false)
   const [previewMode, setPreviewMode] = useState(false)
   const [formData, setFormData] = useState({
@@ -33,13 +35,22 @@ export default function JobPosting() {
     salary: {
       min: '',
       max: '',
-      currency: 'USD'
+      currency: 'INR'
     },
     benefits: [],
     status: 'active'
   })
   const [skillInput, setSkillInput] = useState('')
   const [benefitInput, setBenefitInput] = useState('')
+
+  useEffect(() => {
+    if (user?.profile?.company) {
+      setFormData(prev => ({
+        ...prev,
+        company: user.profile.company
+      }))
+    }
+  }, [user])
 
   const handleInputChange = (e) => {
     const { name, value } = e.target
@@ -153,18 +164,20 @@ export default function JobPosting() {
     'Executive'
   ]
 
-  const departments = [
-    'Engineering',
-    'Design',
-    'Marketing',
-    'Sales',
-    'HR',
-    'Finance',
-    'Operations',
-    'Customer Support',
-    'Product',
-    'Data'
-  ]
+  const departments = (user?.profile?.departments && user.profile.departments.length > 0) 
+    ? user.profile.departments 
+    : [
+      'Engineering',
+      'Design',
+      'Marketing',
+      'Sales',
+      'HR',
+      'Finance',
+      'Operations',
+      'Customer Support',
+      'Product',
+      'Data'
+    ]
 
   if (previewMode) {
     return (
@@ -452,11 +465,14 @@ export default function JobPosting() {
                   onChange={handleInputChange}
                   className="input"
                 >
-                  <option value="USD">USD</option>
-                  <option value="EUR">EUR</option>
-                  <option value="GBP">GBP</option>
-                  <option value="CAD">CAD</option>
-                  <option value="AUD">AUD</option>
+                  <option value="INR">INR (₹)</option>
+                  <option value="USD">USD ($)</option>
+                  <option value="EUR">EUR (€)</option>
+                  <option value="GBP">GBP (£)</option>
+                  <option value="CAD">CAD ($)</option>
+                  <option value="AUD">AUD ($)</option>
+                  <option value="AED">AED</option>
+                  <option value="SGD">SGD ($)</option>
                 </select>
               </div>
             </div>

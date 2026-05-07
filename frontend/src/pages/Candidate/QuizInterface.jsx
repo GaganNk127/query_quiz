@@ -347,14 +347,14 @@ export default function QuizInterface() {
             <div className="space-y-4">
               <button
                 onClick={handleStartQuiz}
-                className="w-full bg-blue-600 text-white py-4 px-6 rounded-lg font-semibold hover:bg-blue-700 transition-colors text-lg"
+                className="btn-primary btn-lg w-full"
               >
                 Start Quiz
               </button>
 
               <button
                 onClick={() => window.history.back()}
-                className="w-full bg-white text-gray-700 py-4 px-6 rounded-lg border border-gray-300 hover:bg-gray-50 transition-colors"
+                className="btn-outline btn-lg w-full"
               >
                 Go Back
               </button>
@@ -391,7 +391,7 @@ export default function QuizInterface() {
             </p>
             <button
               onClick={() => window.location.href = '/candidate/quiz-results'}
-              className="bg-blue-600 text-white py-3 px-6 rounded-lg font-semibold hover:bg-blue-700 transition-colors"
+              className="btn-primary"
             >
               View Results
             </button>
@@ -500,7 +500,7 @@ export default function QuizInterface() {
             <button
               onClick={handleAnswerSubmit}
               disabled={selectedAnswer === null || loading}
-              className="w-full bg-blue-600 text-white py-3 px-6 rounded-lg font-semibold hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              className="btn-primary btn-lg w-full"
             >
               {loading ? (
                 <div className="flex items-center justify-center">

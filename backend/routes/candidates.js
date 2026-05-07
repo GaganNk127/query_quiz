@@ -149,8 +149,6 @@ router.get('/', authenticate, authorize('recruiter'), async (req, res) => {
       query['appliedJobs.job'] = { $in: recruiterJobObjectIds };
     }
 
-    console.log('🔍 Recruiter Candidate Query:', JSON.stringify(query, null, 2));
-    console.log('🔍 Recruiter Job IDs:', recruiterJobIds);
 
     // Filter by ATS score if specified
     if (minScore > 0) {

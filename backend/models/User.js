@@ -28,10 +28,9 @@ const userSchema = new mongoose.Schema({
     phone: String,
     location: String,
     bio: String,
-    website: String,
-    website: String,
     linkedin: String,
-    company: String
+    company: String,
+    departments: [String]
   }
 }, {
   timestamps: true

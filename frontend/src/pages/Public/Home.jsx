@@ -95,14 +95,14 @@ export default function Home() {
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link
                 to="/auth/register"
-                className="bg-white text-blue-600 hover:bg-gray-100 px-8 py-4 text-lg font-semibold rounded-lg transition-colors inline-flex items-center justify-center"
+                className="btn-primary btn-lg bg-white text-blue-600 hover:bg-gray-100"
               >
                 Get Started Free
                 <ArrowRight className="ml-2 h-5 w-5" />
               </Link>
               <Link
                 to="/about"
-                className="border-2 border-white text-white hover:bg-white hover:text-blue-600 px-8 py-4 text-lg font-semibold rounded-lg transition-colors inline-flex items-center justify-center"
+                className="btn-outline btn-lg border-2 border-white text-white hover:bg-white hover:text-blue-600"
               >
                 Learn More
               </Link>
@@ -261,14 +261,14 @@ export default function Home() {
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link
               to="/auth/register"
-              className="bg-white text-blue-600 hover:bg-gray-100 px-8 py-4 text-lg font-semibold rounded-lg transition-colors inline-flex items-center justify-center"
+              className="btn-primary btn-lg bg-white text-blue-600 hover:bg-gray-100"
             >
               Start Free Trial
               <ArrowRight className="ml-2 h-5 w-5" />
             </Link>
             <Link
               to="/auth/login"
-              className="border-2 border-white text-white hover:bg-white hover:text-blue-600 px-8 py-4 text-lg font-semibold rounded-lg transition-colors inline-flex items-center justify-center"
+              className="btn-outline btn-lg border-2 border-white text-white hover:bg-white hover:text-blue-600"
             >
               Sign In
             </Link>

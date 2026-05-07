@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { Eye, EyeOff, Mail, Lock, User, Phone, MapPin, Briefcase } from 'lucide-react'
+import { Eye, EyeOff, Mail, Lock, User, Phone, MapPin, Briefcase, Plus, X } from 'lucide-react'
 import { useAuth } from '../../contexts/AuthContext'
 import toast from 'react-hot-toast'
 
@@ -14,12 +14,15 @@ export default function Register() {
     profile: {
       phone: '',
       location: '',
-      bio: ''
+      bio: '',
+      company: '',
+      departments: []
     }
   })
   const [showPassword, setShowPassword] = useState(false)
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
+  const [deptInput, setDeptInput] = useState('')
   
   const { register } = useAuth()
   const navigate = useNavigate()
@@ -42,6 +45,29 @@ export default function Register() {
         [name]: value
       }))
     }
+  }
+
+  const handleAddDept = () => {
+    if (deptInput.trim() && !formData.profile.departments.includes(deptInput.trim())) {
+      setFormData(prev => ({
+        ...prev,
+        profile: {
+          ...prev.profile,
+          departments: [...prev.profile.departments, deptInput.trim()]
+        }
+      }))
+      setDeptInput('')
+    }
+  }
+
+  const handleRemoveDept = (deptToRemove) => {
+    setFormData(prev => ({
+      ...prev,
+      profile: {
+        ...prev.profile,
+        departments: prev.profile.departments.filter(d => d !== deptToRemove)
+      }
+    }))
   }
 
   const handleSubmit = async (e) => {
@@ -259,6 +285,64 @@ export default function Register() {
             </div>
           </div>
 
+          {formData.role === 'recruiter' && (
+            <>
+              <div>
+                <label htmlFor="company" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  Company Name *
+                </label>
+                <div className="relative">
+                  <Briefcase className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-black" />
+                  <input
+                    type="text"
+                    id="company"
+                    name="profile.company"
+                    value={formData.profile.company}
+                    onChange={handleChange}
+                    required={formData.role === 'recruiter'}
+                    className="input pl-10"
+                    placeholder="TechCorp Inc."
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  Departments * (e.g. Engineering, HR)
+                </label>
+                <div className="flex items-center space-x-2">
+                  <input
+                    type="text"
+                    value={deptInput}
+                    onChange={(e) => setDeptInput(e.target.value)}
+                    onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), handleAddDept())}
+                    className="input flex-1"
+                    placeholder="Add department"
+                  />
+                  <button
+                    type="button"
+                    onClick={handleAddDept}
+                    className="btn btn-outline p-2"
+                  >
+                    <Plus className="h-4 w-4" />
+                  </button>
+                </div>
+                {formData.profile.departments.length > 0 && (
+                  <div className="flex flex-wrap gap-2 mt-2">
+                    {formData.profile.departments.map((dept, index) => (
+                      <span key={index} className="inline-flex items-center px-2 py-1 bg-primary/10 text-primary rounded-md text-xs">
+                        {dept}
+                        <button type="button" onClick={() => handleRemoveDept(dept)} className="ml-1 text-primary/60 hover:text-primary">
+                          <X className="h-3 w-3" />
+                        </button>
+                      </span>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </>
+          )}
+
           <div>
             <label htmlFor="bio" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
               Bio (Optional)
@@ -270,7 +354,7 @@ export default function Register() {
               onChange={handleChange}
               rows={3}
               className="textarea"
-              placeholder="Tell us about yourself..."
+              placeholder={formData.role === 'recruiter' ? "Tell us about your company and role..." : "Tell us about yourself..."}
             />
           </div>
         </div>

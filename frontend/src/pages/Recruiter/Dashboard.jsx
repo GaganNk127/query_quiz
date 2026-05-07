@@ -264,22 +264,22 @@ export default function RecruiterDashboard() {
 
               <button
                 onClick={handleAssignQuiz}
-                className="w-full bg-purple-600 text-white p-2 rounded-md"
+                className="btn-purple w-full mt-2"
               >
                 {assigningQuiz ? "Assigning..." : "Assign Quiz"}
               </button>
             </div>
           )}
 
-          <Link to="/recruiter/job-posting" className="block p-4 bg-blue-100 dark:bg-blue-900/20 rounded-lg mb-3">
+          <Link to="/recruiter/job-posting" className="btn-primary w-full mb-3 justify-start">
             Post Job →
           </Link>
 
-          <Link to="/recruiter/candidates" className="block p-4 bg-green-100 dark:bg-green-900/20 rounded-lg mb-3">
+          <Link to="/recruiter/candidates" className="btn-secondary w-full mb-3 justify-start bg-green-100 dark:bg-green-900/20 text-green-700 dark:text-green-300">
             View Candidates →
           </Link>
 
-          <Link to="/recruiter/job-management" className="block p-4 bg-purple-100 dark:bg-purple-900/20 rounded-lg">
+          <Link to="/recruiter/job-management" className="btn-secondary w-full justify-start bg-purple-100 dark:bg-purple-900/20 text-purple-700 dark:text-purple-300">
             Manage Jobs →
           </Link>
         </div>
@@ -335,7 +335,7 @@ export default function RecruiterDashboard() {
 
                 <Link
                   to={`/recruiter/candidates/${c._id}`}
-                  className="px-3 py-1 border rounded-md"
+                  className="btn-outline btn-sm"
                 >
                   View
                 </Link>
@@ -365,7 +365,7 @@ export default function RecruiterDashboard() {
 
                 <Link
                   to={`/recruiter/job-management/${job._id}`}
-                  className="px-3 py-1 border rounded-md"
+                  className="btn-outline btn-sm"
                 >
                   Manage
                 </Link>

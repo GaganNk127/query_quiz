@@ -492,7 +492,7 @@ export default function CandidateList() {
                       <div className="flex items-center space-x-2">
                         <Link
                           to={`/recruiter/candidates/${candidate._id}`}
-                          className="btn btn-outline text-sm"
+                          className="btn-outline btn-sm"
                         >
                           View
                         </Link>
@@ -500,7 +500,7 @@ export default function CandidateList() {
                         {!candidate.shortlisted && (
                           <button
                             onClick={() => handleShortlist(candidate._id)}
-                            className="btn btn-primary text-sm"
+                            className="btn-primary btn-sm"
                           >
                             Shortlist
                           </button>

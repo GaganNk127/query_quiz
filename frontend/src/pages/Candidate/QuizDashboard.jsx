@@ -265,7 +265,7 @@ export default function QuizDashboard() {
                 {quiz.status === 'assigned' && (
                   <button
                     onClick={() => handleStartQuiz(quiz.id)}
-                    className="w-full btn btn-primary flex items-center justify-center"
+                    className="btn-primary w-full"
                   >
                     <Play className="w-4 h-4 mr-2" />
                     Start Quiz
@@ -275,7 +275,7 @@ export default function QuizDashboard() {
                 {quiz.status === 'in_progress' && (
                   <button
                     onClick={() => handleStartQuiz(quiz.id)}
-                    className="w-full btn btn-secondary flex items-center justify-center"
+                    className="btn-secondary w-full"
                   >
                     <Play className="w-4 h-4 mr-2" />
                     Continue Quiz
