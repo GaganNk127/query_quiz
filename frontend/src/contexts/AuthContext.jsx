@@ -42,9 +42,9 @@ const AUTH_ACTIONS = {
 // Initial state
 const initialState = {
   user: null,
-  token: null,
+  token: localStorage.getItem('token'),
   isAuthenticated: false,
-  isLoading: false,
+  isLoading: !!localStorage.getItem('token'), // Set loading to true if we have a token to check
   error: null
 }
 
