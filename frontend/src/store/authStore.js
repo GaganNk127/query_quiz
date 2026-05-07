@@ -168,9 +168,10 @@ export const useAuthStore = create(
   )
 )
 
-// Quiz Store
+  // Quiz Store
 export const useQuizStore = create((set, get) => ({
   // State
+  quizId: null,
   currentQuestion: 0,
   answers: [],
   timeRemaining: 0,
@@ -180,9 +181,10 @@ export const useQuizStore = create((set, get) => ({
   questionStartTime: null,
 
   // Actions
-  startQuiz: (questions) => {
+  startQuiz: (questions, quizId) => {
     const totalTime = questions.reduce((total, q) => total + (q.timeLimit || 60), 0)
     set({
+      quizId,
       quizQuestions: questions,
       currentQuestion: 0,
       answers: [],
@@ -254,6 +256,7 @@ export const useQuizStore = create((set, get) => ({
 
   resetQuiz: () => {
     set({
+      quizId: null,
       currentQuestion: 0,
       answers: [],
       timeRemaining: 0,

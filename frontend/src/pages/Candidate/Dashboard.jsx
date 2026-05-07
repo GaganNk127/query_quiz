@@ -137,7 +137,7 @@ export default function CandidateDashboard() {
               <Briefcase className="h-6 w-6 text-purple-600" />
             </div>
             <span className="text-2xl font-bold text-gray-900 dark:text-white">
-              {stats.applicationsCount}
+              {stats.totalApplications}
             </span>
           </div>
           <h3 className="font-semibold text-gray-900 dark:text-white mb-1">

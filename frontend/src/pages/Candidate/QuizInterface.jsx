@@ -10,6 +10,7 @@ import {
   EyeOff
 } from 'lucide-react'
 import { useQuiz } from '../../contexts/QuizContext'
+import { useQuizStore } from '../../store/authStore'
 import { useProctoringStore } from '../../store/proctoringStore'
 import toast from 'react-hot-toast'
 import axios from 'axios'
@@ -104,6 +105,10 @@ export default function QuizInterface() {
         const timeLimit = quizData.timeLimit || questions.length * 60 // 1 minute per question default
 
         startQuiz(questions, timeLimit)
+        
+        // 🔥 SYNC: Ensure quizStore has the quizId for proctoring
+        useQuizStore.getState().startQuiz(questions, quizData.id)
+
         setQuestionStartTime(Date.now())
 
         // Start proctoring

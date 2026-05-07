@@ -52,11 +52,21 @@ export const useProctoringStore = create((set, get) => ({
       // Ensure TensorFlow backend is initialized
       await ensureTFBackend()
 
-      // Load BlazeFace model
-      const model = await blazeface.load()
+      // Load models in parallel
+      const [model, objectModel] = await Promise.all([
+        blazeface.load().catch(err => {
+          console.error('BlazeFace load error:', err);
+          return null;
+        }),
+        cocoSsd.load().catch(err => {
+          console.error('COCO-SSD load error:', err);
+          return null;
+        })
+      ]);
 
-      // Load COCO-SSD model
-      const objectModel = await cocoSsd.load()
+      if (!model) {
+        throw new Error('Failed to load Face Detection model. Please check your connection.');
+      }
 
       // Set up visibility change detection
       document.addEventListener('visibilitychange', get().handleVisibilityChange)
@@ -124,8 +134,11 @@ export const useProctoringStore = create((set, get) => ({
       const { isMonitoring } = get()
       if (!isMonitoring) return
 
-      await get().detectFaces()
-      await get().detectObjects()
+      // Run detections in parallel for better performance
+      await Promise.all([
+        get().detectFaces(),
+        get().detectObjects()
+      ]).catch(err => console.error('Monitoring loop error:', err));
 
       // Schedule next detection
       setTimeout(monitor, 1000) // Check every second
@@ -202,10 +215,12 @@ export const useProctoringStore = create((set, get) => ({
       const predictions = await objectModel.detect(video)
 
       // Check for prohibited items (e.g., cell phone)
-      const prohibitedItems = ['cell phone', 'mobile phone']
+      const prohibitedItems = ['cell phone', 'mobile phone', 'phone', 'remote', 'laptop']
 
       const violations = predictions.filter(pred =>
-        prohibitedItems.includes(pred.class.toLowerCase()) && pred.score > 0.6
+        (prohibitedItems.includes(pred.class.toLowerCase()) || 
+         pred.class.toLowerCase().includes('phone')) && 
+        pred.score > 0.5 // Slightly lower threshold for better recall
       )
 
       if (violations.length > 0) {

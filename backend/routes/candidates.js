@@ -111,8 +111,9 @@ router.get('/', authenticate, authorize('recruiter'), async (req, res) => {
 
     // Build base query
     let query = {
-      cheatingStatus: { $ne: 'rejected_cheating' },
-      resumeText: { $exists: true, $ne: '' } // Only candidates with resumes
+      cheatingStatus: { $ne: 'rejected_cheating' }
+      // 🔥 REMOVED: resumeText: { $exists: true, $ne: '' } 
+      // (Relaxing this to see candidates even if resume is not processed)
     };
 
     // Restrict candidates to those who applied to the recruiter's jobs
@@ -147,6 +148,9 @@ router.get('/', authenticate, authorize('recruiter'), async (req, res) => {
       }
       query['appliedJobs.job'] = { $in: recruiterJobObjectIds };
     }
+
+    console.log('🔍 Recruiter Candidate Query:', JSON.stringify(query, null, 2));
+    console.log('🔍 Recruiter Job IDs:', recruiterJobIds);
 
     // Filter by ATS score if specified
     if (minScore > 0) {
