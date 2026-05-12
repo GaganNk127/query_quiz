@@ -320,7 +320,7 @@ export default function QuizInterface() {
       stopProctoring()
       stopCamera()
 
-      alert('Quiz has been auto-submitted due to multiple proctoring violations.')
+      toast.error('Quiz has been auto-submitted due to multiple proctoring violations.')
 
       navigate('/candidate/quiz-results', {
         state: {

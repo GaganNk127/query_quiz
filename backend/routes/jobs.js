@@ -267,6 +267,17 @@ router.post('/:id/apply', authenticate, authorize('candidate'), async (req, res)
       return res.status(400).json({ message: 'Job is not accepting applications' });
     }
 
+    // Check if candidate exists and is restricted
+    const Candidate = (await import('../models/Candidate.js')).default;
+    let candidate = await Candidate.findOne({ user: req.user._id });
+
+    if (candidate && candidate.restrictionUntil && new Date(candidate.restrictionUntil) > new Date()) {
+      return res.status(403).json({ 
+        message: `You are restricted from applying to jobs until ${new Date(candidate.restrictionUntil).toLocaleDateString()} due to multiple proctoring violations.`,
+        restrictedUntil: candidate.restrictionUntil
+      });
+    }
+
     // Check if already applied
     const alreadyApplied = job.applicants.some(
       applicant => applicant.candidate.toString() === req.user._id.toString()
@@ -286,12 +297,10 @@ router.post('/:id/apply', authenticate, authorize('candidate'), async (req, res)
     await job.save();
 
     // Also update candidate's applied jobs
-    const Candidate = (await import('../models/Candidate.js')).default;
-    let candidate = await Candidate.findOne({ user: req.user._id });
-
     // Create candidate profile if it doesn't exist
     if (!candidate) {
-      candidate = new Candidate({
+      const CandidateModel = (await import('../models/Candidate.js')).default;
+      candidate = new CandidateModel({
         user: req.user._id,
         resumeText: '',
         atsScore: 0,

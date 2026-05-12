@@ -32,8 +32,11 @@ export default function JobListings() {
   })
   const [showFilters, setShowFilters] = useState(false)
 
+  const [restrictionUntil, setRestrictionUntil] = useState(null)
+
   useEffect(() => {
     fetchJobs()
+    checkRestriction()
   }, [filters, pagination.current])
 
   const fetchJobs = async () => {
@@ -52,6 +55,20 @@ export default function JobListings() {
       console.error('Error fetching jobs:', error)
     } finally {
       setLoading(false)
+    }
+  }
+
+  const checkRestriction = async () => {
+    try {
+      const response = await axios.get('/api/candidates/profile')
+      if (response.data.candidate?.restrictionUntil) {
+        const restrictionDate = new Date(response.data.candidate.restrictionUntil)
+        if (restrictionDate > new Date()) {
+          setRestrictionUntil(restrictionDate)
+        }
+      }
+    } catch (error) {
+      console.error('Error checking restriction:', error)
     }
   }
 
@@ -256,6 +273,19 @@ export default function JobListings() {
         </p>
       </div>
 
+      {/* Restriction Warning */}
+      {restrictionUntil && (
+        <div className="bg-red-50 border-l-4 border-red-400 p-4 rounded-lg flex items-center space-x-3">
+          <Clock className="h-5 w-5 text-red-500" />
+          <div>
+            <h3 className="text-red-800 font-semibold">Job Application Restricted</h3>
+            <p className="text-red-700 text-sm">
+              You are restricted from applying to new jobs until <strong>{restrictionUntil.toLocaleDateString()}</strong> due to multiple proctoring violations.
+            </p>
+          </div>
+        </div>
+      )}
+
       {/* Job Listings */}
       <div className="space-y-4">
         {jobs.length > 0 ? (
@@ -348,9 +378,10 @@ export default function JobListings() {
                   {!job.hasApplied && (
                     <button
                       onClick={() => applyToJob(job._id)}
-                      className="btn btn-primary text-sm"
+                      disabled={!!restrictionUntil}
+                      className={`btn btn-primary text-sm ${restrictionUntil ? 'opacity-50 cursor-not-allowed' : ''}`}
                     >
-                      Apply Now
+                      {restrictionUntil ? 'Restricted' : 'Apply Now'}
                     </button>
                   )}
                 </div>

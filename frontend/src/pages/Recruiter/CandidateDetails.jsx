@@ -196,9 +196,19 @@ export default function CandidateDetails() {
               <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-1">
                 {candidate.user?.name}
               </h1>
-              <p className="text-gray-600 dark:text-gray-400 mb-2">
+              <p className="text-gray-600 dark:text-gray-400 mb-1">
                 {candidate.user?.email}
               </p>
+              {candidate.appliedJobs && candidate.appliedJobs.length > 0 && (
+                <div className="flex flex-wrap gap-2 mb-2">
+                  {candidate.appliedJobs.map((app, idx) => (
+                    <span key={idx} className="inline-flex items-center text-xs font-medium text-primary bg-primary/10 px-2 py-0.5 rounded">
+                      <Briefcase className="h-3 w-3 mr-1" />
+                      {app.job?.title || 'Unknown Job'}
+                    </span>
+                  ))}
+                </div>
+              )}
               <div className="flex items-center space-x-4 text-sm">
                 {candidate.shortlisted && (
                   <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">

@@ -181,17 +181,26 @@ router.get('/', authenticate, authorize('recruiter'), async (req, res) => {
 
     const candidates = await Candidate.find(query)
       .populate('user', 'name email profile')
-      .populate('appliedJobs.job', 'title location type')
+      .populate('appliedJobs.job', 'title location type postedBy')
       .sort(sort)
       .limit(limit * 1)
       .skip((page - 1) * limit)
       .exec();
 
+    // Filter appliedJobs to only include those belonging to this recruiter
+    const filteredCandidates = candidates.map(c => {
+      const candidateObj = c.toObject();
+      candidateObj.appliedJobs = (candidateObj.appliedJobs || []).filter(app => 
+        app.job && app.job.postedBy && app.job.postedBy.toString() === req.user._id.toString()
+      );
+      return candidateObj;
+    });
+
     const total = await Candidate.countDocuments(query);
-    console.log(`[DEBUG] Found ${candidates.length} candidates, Total ${total}`);
+    console.log(`[DEBUG] Found ${filteredCandidates.length} candidates, Total ${total}`);
 
     res.json({
-      candidates,
+      candidates: filteredCandidates,
       pagination: {
         current: page,
         pages: Math.ceil(total / limit),
@@ -343,13 +352,19 @@ router.get('/:id', authenticate, authorize('recruiter'), async (req, res) => {
   try {
     const candidate = await Candidate.findById(req.params.id)
       .populate('user', 'name email profile')
-      .populate('appliedJobs.job', 'title description location type');
+      .populate('appliedJobs.job', 'title description location type postedBy');
 
     if (!candidate) {
       return res.status(404).json({ message: 'Candidate not found' });
     }
 
-    res.json({ candidate });
+    // Filter appliedJobs to only include those belonging to this recruiter
+    const candidateObj = candidate.toObject();
+    candidateObj.appliedJobs = (candidateObj.appliedJobs || []).filter(app => 
+      app.job && app.job.postedBy && app.job.postedBy.toString() === req.user._id.toString()
+    );
+
+    res.json({ candidate: candidateObj });
   } catch (error) {
     console.error('Get candidate details error:', error);
     res.status(500).json({ message: 'Server error fetching candidate details' });

@@ -131,6 +131,17 @@ const candidateSchema = new mongoose.Schema({
     default: 'none',
     enum: ['none', 'warning', 'rejected_cheating']
   },
+  cheatedQuizzes: [{
+    quizId: String,
+    cheatedAt: {
+      type: Date,
+      default: Date.now
+    }
+  }],
+  restrictionUntil: {
+    type: Date,
+    default: null
+  },
   proctoringLog: [{
     quizId: String,
     timestamp: Date,

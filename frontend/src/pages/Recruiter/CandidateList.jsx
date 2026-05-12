@@ -42,6 +42,7 @@ export default function CandidateList() {
   const [showFilters, setShowFilters] = useState(false)
   const [selectedCandidates, setSelectedCandidates] = useState([])
   const [bulkActionLoading, setBulkActionLoading] = useState(false)
+  const [recruiterJobs, setRecruiterJobs] = useState([])
 
   const { user, isAuthenticated } = useAuth()
 
@@ -70,11 +71,21 @@ export default function CandidateList() {
     }
   }, [filters, pagination.current])
 
+  const fetchRecruiterJobs = useCallback(async () => {
+    try {
+      const response = await axios.get('/api/jobs/my-jobs')
+      setRecruiterJobs(response.data.jobs || [])
+    } catch (error) {
+      console.error('Error fetching recruiter jobs:', error)
+    }
+  }, [])
+
   useEffect(() => {
     if (isAuthenticated && user?.role === 'recruiter') {
       fetchCandidates()
+      fetchRecruiterJobs()
     }
-  }, [fetchCandidates, isAuthenticated, user])
+  }, [fetchCandidates, fetchRecruiterJobs, isAuthenticated, user])
 
   const handleFilterChange = (name, value) => {
     setFilters(prev => ({
@@ -346,6 +357,22 @@ export default function CandidateList() {
               </select>
             </div>
 
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                Job Posting
+              </label>
+              <select
+                value={filters.jobId || ''}
+                onChange={(e) => handleFilterChange('jobId', e.target.value)}
+                className="input"
+              >
+                <option value="">All Jobs</option>
+                {recruiterJobs.map(job => (
+                  <option key={job._id} value={job._id}>{job.title}</option>
+                ))}
+              </select>
+            </div>
+
             <div className="flex items-end">
               <button
                 onClick={clearFilters}
@@ -390,6 +417,9 @@ export default function CandidateList() {
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                     Contact
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                    Job Applied
                   </th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                     ATS Score
@@ -449,6 +479,21 @@ export default function CandidateList() {
                             <MapPin className="h-3 w-3 mr-1 text-gray-400" />
                             {candidate.user.profile.location}
                           </div>
+                        )}
+                      </div>
+                    </td>
+                    <td className="px-6 py-4">
+                      <div className="text-sm text-gray-900 dark:text-white">
+                        {candidate.appliedJobs && candidate.appliedJobs.length > 0 ? (
+                          <div className="flex flex-col gap-1">
+                            {candidate.appliedJobs.map((app, idx) => (
+                              <span key={idx} className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200">
+                                {app.job?.title || 'Unknown Job'}
+                              </span>
+                            ))}
+                          </div>
+                        ) : (
+                          <span className="text-gray-500">N/A</span>
                         )}
                       </div>
                     </td>

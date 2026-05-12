@@ -193,7 +193,7 @@ router.post('/answer', authenticate, authorize('candidate'), async (req, res) =>
 router.post('/proctoring', authenticate, authorize('candidate'), async (req, res) => {
   try {
     const { quizId, type, duration } = req.body;
-    const candidate = await Candidate.findOne({ user: req.user._id });
+    const candidate = await Candidate.findOne({ user: req.user._id }).populate('user', 'name email');
 
     // Log the event
     candidate.proctoringLog.push({ quizId, type, duration, timestamp: new Date() });
@@ -212,11 +212,11 @@ router.post('/proctoring', authenticate, authorize('candidate'), async (req, res
           if (job && job.postedBy) {
             await emailService.sendProctoringAlertEmail(
               job.postedBy.email,
-              candidate.user.name || 'Candidate',
+              candidate.user?.name || 'Candidate',
               job.title,
               [`${type}: detected at ${new Date().toLocaleTimeString()}`]
             );
-            console.log(`📩 Proctoring alert sent to ${job.postedBy.email} for ${candidate.user.name}`);
+            console.log(`📩 Proctoring alert sent to ${job.postedBy.email} for ${candidate.user?.name}`);
           }
         } catch (emailError) {
           console.error('Failed to send initial proctoring alert:', emailError);
@@ -225,14 +225,32 @@ router.post('/proctoring', authenticate, authorize('candidate'), async (req, res
     }
 
     // Still check for overall cheating threshold
-    const cheatingDetected = quizService.detectCheating(candidate.proctoringLog);
-    if (cheatingDetected && candidate.cheatingStatus !== 'rejected_cheating') {
-      candidate.cheatingStatus = 'rejected_cheating';
+    const cheatingDetected = quizService.detectCheating(candidate.proctoringLog.filter(log => log.quizId === quizId));
+    
+    if (cheatingDetected) {
+      // Add to cheatedQuizzes if not already recorded for this quiz
+      const alreadyRecorded = candidate.cheatedQuizzes.some(q => q.quizId === quizId);
+      if (!alreadyRecorded) {
+        candidate.cheatedQuizzes.push({ quizId, cheatedAt: new Date() });
+        candidate.cheatingStatus = 'rejected_cheating';
+
+        // Check for 1-year ban (more than 2 quizzes = 3 or more)
+        if (candidate.cheatedQuizzes.length >= 3) {
+          const coolingPeriod = new Date();
+          coolingPeriod.setFullYear(coolingPeriod.getFullYear() + 1);
+          candidate.restrictionUntil = coolingPeriod;
+          console.log(`🚫 Candidate ${candidate._id} restricted until ${coolingPeriod}`);
+        }
+      }
     }
 
     await candidate.save();
 
-    res.json({ message: 'Event logged', cheating: cheatingDetected || false });
+    res.json({ 
+      message: 'Event logged', 
+      cheating: cheatingDetected || false,
+      restrictedUntil: candidate.restrictionUntil
+    });
   } catch (err) {
     console.error('Proctoring log error:', err);
     res.status(500).json({ message: 'Error logging event' });
