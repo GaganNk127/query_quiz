@@ -181,6 +181,35 @@ export default function CandidateDetails() {
     )
   }
 
+  const latestAttempt = candidate?.quizAttempts?.filter(a => a.status === 'completed')
+    .sort((a, b) => new Date(b.completedAt) - new Date(a.completedAt))[0];
+
+  const detailedQuizResults = latestAttempt?.answers?.map(ans => {
+    // Find the question in assignments
+    let questionText = 'Question details not available';
+    let options = [];
+    let correctAnswerText = 'Unknown';
+    let selectedAnswerText = 'Not answered';
+
+    candidate.quizAssignments?.forEach(assign => {
+      const q = assign.questions?.find(q => String(q.id) === String(ans.questionId));
+      if (q) {
+        questionText = q.question;
+        options = q.options;
+        correctAnswerText = q.options[q.correct] || 'Unknown';
+        selectedAnswerText = q.options[ans.answer !== undefined ? ans.answer : ans.selectedAnswer] || 'Not answered';
+      }
+    });
+
+    return {
+      ...ans,
+      question: questionText,
+      options,
+      correctAnswer: correctAnswerText,
+      selectedAnswer: selectedAnswerText
+    };
+  });
+
   return (
     <div className="max-w-6xl mx-auto space-y-6">
       {/* Header */}
@@ -283,10 +312,10 @@ export default function CandidateDetails() {
             </h3>
             <Award className="h-5 w-5 text-gray-400" />
           </div>
-          {candidate.quizScore > 0 ? (
-            <div className={`text-center p-6 rounded-lg ${getScoreBgColor(candidate.quizScore)}`}>
-              <div className={`text-4xl font-bold ${getScoreColor(candidate.quizScore)}`}>
-                {candidate.quizScore}%
+          {latestAttempt ? (
+            <div className={`text-center p-6 rounded-lg ${getScoreBgColor(candidate.quizScore || latestAttempt.score)}`}>
+              <div className={`text-4xl font-bold ${getScoreColor(candidate.quizScore || latestAttempt.score)}`}>
+                {candidate.quizScore || latestAttempt.score}%
               </div>
               <p className="text-sm text-gray-600 dark:text-gray-300 mt-2">
                 Assessment performance
@@ -468,9 +497,9 @@ export default function CandidateDetails() {
                 Quiz Results
               </h3>
 
-              {candidate.quizAnswers && candidate.quizAnswers.length > 0 ? (
+              {detailedQuizResults && detailedQuizResults.length > 0 ? (
                 <div className="space-y-4">
-                  {candidate.quizAnswers.map((answer, index) => (
+                  {detailedQuizResults.map((answer, index) => (
                     <div key={index} className="border border-gray-200 dark:border-gray-700 rounded-lg p-4">
                       <div className="flex items-start justify-between mb-2">
                         <h4 className="font-medium text-gray-900 dark:text-white">
@@ -487,11 +516,11 @@ export default function CandidateDetails() {
                         {answer.question}
                       </p>
                       <div className="text-sm text-gray-500 dark:text-gray-400">
-                        <p>Your answer: {answer.selectedAnswer}</p>
+                        <p className="font-medium">Selected: <span className={answer.isCorrect ? 'text-green-600' : 'text-red-600'}>{answer.selectedAnswer}</span></p>
                         {!answer.isCorrect && (
-                          <p>Correct answer: {answer.correctAnswer}</p>
+                          <p>Correct: <span className="text-green-600 font-medium">{answer.correctAnswer}</span></p>
                         )}
-                        <p>Time taken: {answer.timeSpent}s</p>
+                        <p className="mt-1 opacity-70 italic text-xs">Time taken: {answer.timeSpent}s</p>
                       </div>
                     </div>
                   ))}

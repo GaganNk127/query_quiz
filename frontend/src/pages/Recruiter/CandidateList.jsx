@@ -505,7 +505,7 @@ export default function CandidateList() {
                       </div>
                     </td>
                     <td className="px-6 py-4">
-                      {candidate.quizScore > 0 ? (
+                      {candidate.quizScore !== undefined && candidate.quizScore !== null && (candidate.quizScore > 0 || candidate.quizAttempts?.some(a => a.status === 'completed')) ? (
                         <div className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getScoreBgColor(candidate.quizScore)}`}>
                           <span className={getScoreColor(candidate.quizScore)}>
                             {candidate.quizScore}%

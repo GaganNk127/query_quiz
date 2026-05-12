@@ -29,6 +29,7 @@ import RecruiterDashboard from './pages/Recruiter/Dashboard'
 import JobPosting from './pages/Recruiter/JobPosting'
 import CandidateList from './pages/Recruiter/CandidateList'
 import CandidateDetails from './pages/Recruiter/CandidateDetails'
+import RecruiterProfile from './pages/Recruiter/Profile'
 
 // Public Pages
 import Home from './pages/Public/Home'
@@ -99,9 +100,10 @@ function AppContent() {
         <Route path="dashboard" element={<RecruiterDashboard />} />
         <Route path="job-posting" element={<JobPosting />} />
         <Route path="job-management" element={<RecruiterDashboard />} />
-        <Route path="job-management/:id" element={<RecruiterDashboard />} />
+        <Route path="job-management/:id" element={<JobPosting />} />
         <Route path="candidates" element={<CandidateList />} />
         <Route path="candidates/:id" element={<CandidateDetails />} />
+        <Route path="profile" element={<RecruiterProfile />} />
       </Route>
 
       {/* 404 Route */}

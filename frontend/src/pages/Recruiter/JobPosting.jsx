@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import { 
   Briefcase, 
   MapPin, 
@@ -17,8 +17,10 @@ import axios from 'axios'
 import { useAuth } from '../../contexts/AuthContext'
 
 export default function JobPosting() {
+  const { id } = useParams()
   const navigate = useNavigate()
   const { user } = useAuth()
+  const [fetching, setFetching] = useState(false)
   const [loading, setLoading] = useState(false)
   const [previewMode, setPreviewMode] = useState(false)
   const [formData, setFormData] = useState({
@@ -44,13 +46,54 @@ export default function JobPosting() {
   const [benefitInput, setBenefitInput] = useState('')
 
   useEffect(() => {
-    if (user?.profile?.company) {
+    if (!id && user?.profile?.company) {
       setFormData(prev => ({
         ...prev,
         company: user.profile.company
       }))
     }
-  }, [user])
+  }, [user, id])
+
+  useEffect(() => {
+    const fetchJobDetails = async () => {
+      if (!id) return
+      
+      setFetching(true)
+      try {
+        const response = await axios.get(`/api/jobs/${id}`)
+        const job = response.data.job
+        
+        // Transform data to match form structure
+        setFormData({
+          title: job.title || '',
+          company: job.company || '',
+          description: job.description || '',
+          requirements: Array.isArray(job.requirements) ? job.requirements.join('\n') : job.requirements || '',
+          responsibilities: Array.isArray(job.responsibilities) ? job.responsibilities.join('\n') : job.responsibilities || '',
+          skills: job.skills || [],
+          experience: job.experience || '',
+          location: job.location || '',
+          type: job.type || 'Full-time',
+          department: job.department || '',
+          salary: {
+            min: job.salary?.min || '',
+            max: job.salary?.max || '',
+            currency: job.salary?.currency || 'INR'
+          },
+          benefits: job.benefits || [],
+          status: job.status || 'active'
+        })
+      } catch (error) {
+        console.error('Error fetching job:', error)
+        toast.error('Failed to load job details')
+        navigate('/recruiter/dashboard')
+      } finally {
+        setFetching(false)
+      }
+    }
+
+    fetchJobDetails()
+  }, [id, navigate])
 
   const handleInputChange = (e) => {
     const { name, value } = e.target
@@ -123,11 +166,16 @@ export default function JobPosting() {
     setLoading(true)
     
     try {
-      const response = await axios.post('/api/jobs', formData)
-      toast.success('Job posted successfully!')
+      if (id) {
+        await axios.put(`/api/jobs/${id}`, formData)
+        toast.success('Job updated successfully!')
+      } else {
+        await axios.post('/api/jobs', formData)
+        toast.success('Job posted successfully!')
+      }
       navigate('/recruiter/job-management')
     } catch (error) {
-      toast.error(error.response?.data?.message || 'Failed to post job')
+      toast.error(error.response?.data?.message || `Failed to ${id ? 'update' : 'post'} job`)
     } finally {
       setLoading(false)
     }
@@ -179,6 +227,14 @@ export default function JobPosting() {
       'Data'
     ]
 
+  if (fetching) {
+    return (
+      <div className="flex justify-center items-center h-64">
+        <div className="animate-spin h-10 w-10 border-4 border-primary border-t-transparent rounded-full" />
+      </div>
+    )
+  }
+
   if (previewMode) {
     return (
       <div className="max-w-4xl mx-auto">
@@ -199,7 +255,7 @@ export default function JobPosting() {
                 disabled={loading}
                 className="btn btn-primary"
               >
-                {loading ? 'Posting...' : 'Post Job'}
+                {loading ? (id ? 'Updating...' : 'Posting...') : (id ? 'Update Job' : 'Post Job')}
               </button>
             </div>
           </div>
@@ -298,10 +354,10 @@ export default function JobPosting() {
         <div className="flex items-center justify-between mb-6">
           <div>
             <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
-              Post New Job
+              {id ? 'Edit Job' : 'Post New Job'}
             </h1>
             <p className="text-gray-600 dark:text-gray-400">
-              Create a new job posting to attract qualified candidates
+              {id ? 'Update the details of your job posting' : 'Create a new job posting to attract qualified candidates'}
             </p>
           </div>
           <button
@@ -647,10 +703,10 @@ export default function JobPosting() {
                 {loading ? (
                   <div className="flex items-center">
                     <div className="loading-spinner h-4 w-4 mr-2"></div>
-                    Posting Job...
+                    {id ? 'Updating Job...' : 'Posting Job...'}
                   </div>
                 ) : (
-                  'Post Job'
+                  id ? 'Update Job' : 'Post Job'
                 )}
               </button>
             </div>
