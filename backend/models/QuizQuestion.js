@@ -27,8 +27,7 @@ const quizQuestionSchema = new mongoose.Schema({
   },
   category: {
     type: String,
-    required: true,
-    enum: ['technical', 'behavioral', 'problem_solving', 'logical_reasoning']
+    required: true
   },
   points: {
     type: Number,

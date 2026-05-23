@@ -17,19 +17,7 @@ const seedQuestions = async () => {
 
     console.log(`Inserting ${quizQuestions.length} quiz questions from config...`);
     
-    // Map questions to match schema enums if needed
-    const mappedQuestions = quizQuestions.map(q => {
-      let category = q.category;
-      if (category === 'problem-solving') category = 'problem_solving';
-      if (category === 'analytical') category = 'logical_reasoning';
-
-      return {
-        ...q,
-        category
-      };
-    });
-
-    await QuizQuestion.insertMany(mappedQuestions);
+    await QuizQuestion.insertMany(quizQuestions);
 
     console.log('🎉 Successfully seeded Quiz Questions from JSON config!');
   } catch (err) {

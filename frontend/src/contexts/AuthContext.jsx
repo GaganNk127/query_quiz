@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useReducer, useEffect, useCallback } from 'react'
+import React, { createContext, useContext, useReducer, useEffect, useCallback, useMemo } from 'react'
 import axios from 'axios'
 
 // Configure axios defaults
@@ -18,10 +18,15 @@ axios.interceptors.request.use((config) => {
 axios.interceptors.response.use(
   (response) => response,
   (error) => {
-    if (error.response?.status === 401) {
+    // If 401 error and not a login request, redirect to login
+    if (error.response?.status === 401 && !error.config.url.includes('/api/auth/login')) {
       localStorage.removeItem('token')
       delete axios.defaults.headers.common['Authorization']
-      window.location.href = '/auth/login'
+      
+      // Only redirect if not already on login/register page to prevent loops/reloads
+      if (!window.location.pathname.includes('/auth/')) {
+        window.location.href = '/auth/login'
+      }
     }
     return Promise.reject(error)
   }
@@ -118,7 +123,7 @@ export const AuthProvider = ({ children }) => {
   const [state, dispatch] = useReducer(authReducer, initialState)
 
   // Login function
-  const login = async (email, password) => {
+  const login = useCallback(async (email, password) => {
     try {
       dispatch({ type: AUTH_ACTIONS.LOGIN_START })
 
@@ -142,10 +147,10 @@ export const AuthProvider = ({ children }) => {
       })
       return { success: false, error: errorMessage }
     }
-  }
+  }, [])
 
   // Register function
-  const register = async (userData) => {
+  const register = useCallback(async (userData) => {
     try {
       dispatch({ type: AUTH_ACTIONS.LOGIN_START })
 
@@ -169,10 +174,10 @@ export const AuthProvider = ({ children }) => {
       })
       return { success: false, error: errorMessage }
     }
-  }
+  }, [])
 
   // Logout function
-  const logout = () => {
+  const logout = useCallback(() => {
     localStorage.removeItem('token')
     localStorage.removeItem('auth-storage') // Clear Zustand auth store
     localStorage.removeItem('quiz-storage') // Clear Zustand quiz store if any
@@ -183,7 +188,7 @@ export const AuthProvider = ({ children }) => {
 
     // Force reload to clear any in-memory state completely
     window.location.href = '/auth/login'
-  }
+  }, [])
 
   // Initialize auth - wrapped in useCallback to prevent infinite re-renders
   const initializeAuth = useCallback(async () => {
@@ -213,7 +218,7 @@ export const AuthProvider = ({ children }) => {
   }, []) // Empty dependency array since it doesn't depend on any external values
 
   // Update profile
-  const updateProfile = async (profileData) => {
+  const updateProfile = useCallback(async (profileData) => {
     try {
       dispatch({ type: AUTH_ACTIONS.LOGIN_START })
       const response = await axios.put('/api/auth/profile', { profile: profileData })
@@ -233,7 +238,7 @@ export const AuthProvider = ({ children }) => {
       })
       return { success: false, error: errorMessage }
     }
-  }
+  }, [])
 
   // Helper functions
   const hasRole = useCallback((role) => {
@@ -248,7 +253,7 @@ export const AuthProvider = ({ children }) => {
     return state.user?.role === 'recruiter'
   }, [state.user?.role])
 
-  const value = {
+  const value = useMemo(() => ({
     ...state,
     login,
     register,
@@ -258,7 +263,7 @@ export const AuthProvider = ({ children }) => {
     hasRole,
     isCandidate,
     isRecruiter
-  }
+  }), [state, login, register, logout, initializeAuth, updateProfile, hasRole, isCandidate, isRecruiter])
 
   return (
     <AuthContext.Provider value={value}>

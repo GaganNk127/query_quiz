@@ -1,6 +1,7 @@
 import express from 'express';
 import Candidate from '../models/Candidate.js';
 import QuizQuestion from '../models/QuizQuestion.js';
+import Job from '../models/Job.js';
 import { authenticate, authorize } from '../middleware/auth.js';
 import * as quizService from '../services/quizService.js';
 import * as notificationService from '../services/notificationService.js';
@@ -14,70 +15,94 @@ import crypto from "crypto";
 
 router.post('/assign', authenticate, authorize('recruiter'), async (req, res) => {
   try {
-    const { candidateId, jobId } = req.body;
+    const { candidateId, candidateIds, jobId } = req.body;
 
-    if (!candidateId || !jobId) {
-      return res.status(400).json({ message: 'Candidate ID and Job ID are required' });
+    const ids = candidateIds || (candidateId ? [candidateId] : []);
+
+    if (ids.length === 0 || !jobId) {
+      return res.status(400).json({ message: 'Candidate IDs and Job ID are required' });
     }
 
-    const candidate = await Candidate.findById(candidateId).populate('user', 'name email');
-    const Job = (await import('../models/Job.js')).default;
     const job = await Job.findById(jobId);
+    if (!job) return res.status(404).json({ message: 'Job not found' });
 
-    if (!candidate || !job)
-      return res.status(404).json({ message: 'Candidate or Job not found' });
-
-    const alreadyAssigned = candidate.quizAssignments?.find(q => q.jobId.toString() === jobId);
-    if (alreadyAssigned) {
-      return res.status(400).json({ message: 'Quiz already assigned for this job' });
-    }
-
-    const generatedQuestions = await quizService.generateQuiz(
-      job.description,
-      candidate.resumeText || '',
-      job.title
-    );
-
-    // 🔥 FIX: Normalize questions before saving
-    const normalizedQuestions = generatedQuestions.map(q => ({
-      id: q.id,
-      question: q.question,
-      options: q.options,
-      correct: q.correct,
-      difficulty: q.difficulty,
-      category: q.category,
-      points: q.points ?? (q.difficulty === 'easy' ? 1 :
-        q.difficulty === 'medium' ? 2 :
-          q.difficulty === 'hard' ? 3 : 4)
-    }));
-
-    const quizAssignment = {
-      id: crypto.randomUUID(),
-      jobId,
-      jobTitle: job.title,
-      assignedAt: new Date(),
-      assignedBy: req.user._id,
-      status: 'assigned',
-      expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
-      questions: normalizedQuestions,
-      timeLimit: normalizedQuestions.length * 60
+    const results = {
+      success: [],
+      failed: []
     };
 
-    candidate.quizAssignments.push(quizAssignment);
-    await candidate.save();
+    for (const id of ids) {
+      try {
+        const candidate = await Candidate.findById(id).populate('user', 'name email');
+        if (!candidate) {
+          results.failed.push({ id, reason: 'Candidate not found' });
+          continue;
+        }
 
-    notificationService.createQuizNotification(
-      candidate._id.toString(),
-      candidate.user.name,
-      candidate.user.email,
-      job.title,
-      quizAssignment.id
-    );
+        const alreadyAssigned = candidate.quizAssignments?.find(q => q.jobId.toString() === jobId);
+        if (alreadyAssigned) {
+          results.failed.push({ id, name: candidate.user?.name, reason: 'Already assigned' });
+          continue;
+        }
 
-    res.json({ message: 'Quiz assigned successfully', quiz: quizAssignment });
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ message: 'Server error assigning quiz' });
+        const generatedQuestions = await quizService.generateQuiz(
+          job.description,
+          candidate.resumeText || '',
+          job.title
+        );
+
+        const normalizedQuestions = generatedQuestions.map(q => ({
+          id: q.id,
+          question: q.question,
+          options: q.options,
+          correct: q.correct,
+          difficulty: q.difficulty,
+          category: q.category,
+          points: q.points ?? (q.difficulty === 'easy' ? 1 :
+            q.difficulty === 'medium' ? 2 :
+              q.difficulty === 'hard' ? 3 : 4)
+        }));
+
+        const quizAssignment = {
+          id: crypto.randomUUID(),
+          jobId,
+          jobTitle: job.title,
+          assignedAt: new Date(),
+          assignedBy: req.user._id,
+          status: 'assigned',
+          expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days expiry
+          questions: normalizedQuestions,
+          timeLimit: normalizedQuestions.length * 60 // 1 min per question
+        };
+
+        candidate.quizAssignments.push(quizAssignment);
+        await candidate.save();
+
+        // Create notification/email
+        try {
+          await notificationService.sendQuizAssignmentEmail(candidate.user.email, {
+            candidateName: candidate.user.name,
+            jobTitle: job.title,
+            quizLink: `${process.env.FRONTEND_URL || 'http://localhost:5173'}/candidate/quiz/attempt?quizId=${quizAssignment.id}`
+          });
+        } catch (emailErr) {
+          console.error('Email notification failed:', emailErr);
+        }
+
+        results.success.push({ id, name: candidate.user?.name });
+      } catch (err) {
+        console.error(`Assignment failed for ${id}:`, err);
+        results.failed.push({ id, reason: err.message });
+      }
+    }
+
+    res.status(200).json({
+      message: `Successfully assigned to ${results.success.length} candidates. ${results.failed.length} failed.`,
+      results
+    });
+  } catch (error) {
+    console.error('Bulk quiz assignment error:', error);
+    res.status(500).json({ message: 'Server error during quiz assignment' });
   }
 });
 
@@ -205,7 +230,6 @@ router.post('/proctoring', authenticate, authorize('candidate'), async (req, res
       const assignment = candidate.quizAssignments.find(q => q.id === quizId);
       if (assignment) {
         try {
-          const Job = (await import('../models/Job.js')).default;
           const job = await Job.findById(assignment.jobId).populate('postedBy', 'email');
           const emailService = await import('../services/emailService.js');
 

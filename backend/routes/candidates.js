@@ -4,9 +4,11 @@ import path from 'node:path';
 import fs from 'node:fs';
 import Candidate from '../models/Candidate.js';
 import User from '../models/User.js';
+import Job from '../models/Job.js';
 import { authenticate, authorize } from '../middleware/auth.js';
 import { uploadResume, handleUploadError } from '../middleware/upload.js';
 import * as atsService from '../services/atsService.js';
+import * as emailService from '../services/emailService.js';
 
 const router = express.Router();
 
@@ -37,7 +39,6 @@ router.post('/upload-resume',
 
       // Calculate ATS score if jobId provided
       if (jobId) {
-        const Job = (await import('../models/Job.js')).default;
         const job = await Job.findById(jobId);
 
         if (job) {
@@ -69,7 +70,6 @@ router.get('/recruiter/stats', authenticate, authorize('recruiter'), async (req,
     const userId = req.user._id;
 
     // Get jobs posted by this recruiter
-    const Job = (await import('../models/Job.js')).default;
     const jobs = await Job.find({ postedBy: userId });
     const jobIds = jobs.map(job => job._id);
 
@@ -126,7 +126,6 @@ router.get('/', authenticate, authorize('recruiter'), async (req, res) => {
     let query = {};
 
     // Restrict candidates to those who applied to the recruiter's jobs
-    const Job = (await import('../models/Job.js')).default;
     const recruiterJobs = await Job.find({ postedBy: req.user._id }).select('_id');
     const recruiterJobObjectIds = recruiterJobs.map(job => job._id);
 
@@ -299,9 +298,14 @@ router.post('/:id/shortlist', authenticate, authorize('recruiter'), async (req, 
 
     await candidate.save();
     await candidate.populate('user', 'name email');
+    await candidate.populate('appliedJobs.job', 'title postedBy');
 
-    // Send email notification (would integrate with EmailJS here)
-    // await emailService.sendShortlistEmail(candidate.user.email, candidate.user.name);
+    // Find the job title for the email
+    const matchedJob = candidate.appliedJobs && candidate.appliedJobs.find(app => app.job && app.job.postedBy && app.job.postedBy.toString() === req.user._id.toString());
+    const jobTitle = matchedJob ? matchedJob.job.title : 'an open position';
+
+    // Send email notification
+    await emailService.sendShortlistedEmail(candidate.user.email, candidate.user.name, jobTitle);
 
     res.json({
       message: 'Candidate shortlisted successfully',

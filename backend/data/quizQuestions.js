@@ -1,1306 +1,292 @@
-import QuizQuestion from '../models/QuizQuestion.js';
 
-// 100 synthetic quiz questions
-const quizQuestions = [
-  // Easy Questions (1-25)
-  {
-    id: 1,
-    question: "What is the primary purpose of a resume?",
-    options: [
-      "To list all personal achievements",
-      "To secure a job interview",
-      "To provide personal contact information",
-      "To showcase educational background only"
-    ],
-    correct: 1,
-    difficulty: "easy",
-    category: "behavioral",
-    points: 1,
-    timeLimit: 30
-  },
-  {
-    id: 2,
-    question: "Which programming language is primarily used for web development?",
-    options: ["Python", "JavaScript", "C++", "Java"],
-    correct: 1,
-    difficulty: "easy",
-    category: "technical",
-    points: 1,
-    timeLimit: 30
-  },
-  {
-    id: 3,
-    question: "What does HTML stand for?",
-    options: [
-      "Hyper Text Markup Language",
-      "High Tech Modern Language",
-      "Home Tool Markup Language",
-      "Hyperlinks and Text Markup Language"
-    ],
-    correct: 0,
-    difficulty: "easy",
-    category: "technical",
-    points: 1,
-    timeLimit: 30
-  },
-  {
-    id: 4,
-    question: "Which of the following is a version control system?",
-    options: ["Git", "Docker", "Webpack", "npm"],
-    correct: 0,
-    difficulty: "easy",
-    category: "technical",
-    points: 1,
-    timeLimit: 30
-  },
-  {
-    id: 5,
-    question: "What is the main advantage of agile development?",
-    options: [
-      "Fixed requirements",
-      "Flexibility and adaptability",
-      "Long development cycles",
-      "Extensive documentation"
-    ],
-    correct: 1,
-    difficulty: "easy",
-    category: "behavioral",
-    points: 1,
-    timeLimit: 30
-  },
-  {
-    id: 6,
-    question: "Which database type is best for unstructured data?",
-    options: ["MySQL", "PostgreSQL", "MongoDB", "SQLite"],
-    correct: 2,
-    difficulty: "easy",
-    category: "technical",
-    points: 1,
-    timeLimit: 30
-  },
-  {
-    id: 7,
-    question: "What does API stand for?",
-    options: [
-      "Application Programming Interface",
-      "Advanced Programming Integration",
-      "Automated Process Implementation",
-      "Application Process Integration"
-    ],
-    correct: 0,
-    difficulty: "easy",
-    category: "technical",
-    points: 1,
-    timeLimit: 30
-  },
-  {
-    id: 8,
-    question: "Which CSS property is used to change text color?",
-    options: ["text-color", "color", "font-color", "text-style"],
-    correct: 1,
-    difficulty: "easy",
-    category: "technical",
-    points: 1,
-    timeLimit: 30
-  },
-  {
-    id: 9,
-    question: "What is the purpose of a code review?",
-    options: [
-      "To find bugs and improve quality",
-      "To test the application",
-      "To deploy the code",
-      "To write documentation"
-    ],
-    correct: 0,
-    difficulty: "easy",
-    category: "behavioral",
-    points: 1,
-    timeLimit: 30
-  },
-  {
-    id: 10,
-    question: "Which HTTP method is used to retrieve data?",
-    options: ["POST", "GET", "PUT", "DELETE"],
-    correct: 1,
-    difficulty: "easy",
-    category: "technical",
-    points: 1,
-    timeLimit: 30
-  },
-  {
-    id: 11,
-    question: "What is the primary function of an operating system?",
-    options: [
-      "To run applications",
-      "To manage hardware resources",
-      "To provide internet access",
-      "To store files"
-    ],
-    correct: 1,
-    difficulty: "easy",
-    category: "technical",
-    points: 1,
-    timeLimit: 30
-  },
-  {
-    id: 12,
-    question: "Which of the following is a cloud computing platform?",
-    options: ["AWS", "GitHub", "VS Code", "Chrome"],
-    correct: 0,
-    difficulty: "easy",
-    category: "technical",
-    points: 1,
-    timeLimit: 30
-  },
-  {
-    id: 13,
-    question: "What does CSS stand for?",
-    options: [
-      "Computer Style Sheets",
-      "Creative Style Sheets",
-      "Cascading Style Sheets",
-      "Colorful Style Sheets"
-    ],
-    correct: 2,
-    difficulty: "easy",
-    category: "technical",
-    points: 1,
-    timeLimit: 30
-  },
-  {
-    id: 14,
-    question: "Which tool is used for package management in JavaScript?",
-    options: ["Git", "npm", "Docker", "Webpack"],
-    correct: 1,
-    difficulty: "easy",
-    category: "technical",
-    points: 1,
-    timeLimit: 30
-  },
-  {
-    id: 15,
-    question: "What is the purpose of unit testing?",
-    options: [
-      "To test individual components",
-      "To test the entire application",
-      "To test user interfaces",
-      "To test performance"
-    ],
-    correct: 0,
-    difficulty: "easy",
-    category: "technical",
-    points: 1,
-    timeLimit: 30
-  },
-  {
-    id: 16,
-    question: "Which data structure uses LIFO principle?",
-    options: ["Queue", "Stack", "Array", "Linked List"],
-    correct: 1,
-    difficulty: "easy",
-    category: "technical",
-    points: 1,
-    timeLimit: 30
-  },
-  {
-    id: 17,
-    question: "What is the main purpose of a firewall?",
-    options: [
-      "To speed up internet",
-      "To block unauthorized access",
-      "To store data",
-      "To run applications"
-    ],
-    correct: 1,
-    difficulty: "easy",
-    category: "technical",
-    points: 1,
-    timeLimit: 30
-  },
-  {
-    id: 18,
-    question: "Which protocol is used for secure web communication?",
-    options: ["HTTP", "HTTPS", "FTP", "SMTP"],
-    correct: 1,
-    difficulty: "easy",
-    category: "technical",
-    points: 1,
-    timeLimit: 30
-  },
-  {
-    id: 19,
-    question: "What is the purpose of responsive design?",
-    options: [
-      "To make websites work on all devices",
-      "To improve website speed",
-      "To add animations",
-      "To increase security"
-    ],
-    correct: 0,
-    difficulty: "easy",
-    category: "technical",
-    points: 1,
-    timeLimit: 30
-  },
-  {
-    id: 20,
-    question: "Which of the following is a NoSQL database?",
-    options: ["MySQL", "PostgreSQL", "MongoDB", "Oracle"],
-    correct: 2,
-    difficulty: "easy",
-    category: "technical",
-    points: 1,
-    timeLimit: 30
-  },
-  {
-    id: 21,
-    question: "What is the primary benefit of using Git?",
-    options: [
-      "Code collaboration and version control",
-      "Code compilation",
-      "Code deployment",
-      "Code testing"
-    ],
-    correct: 0,
-    difficulty: "easy",
-    category: "technical",
-    points: 1,
-    timeLimit: 30
-  },
-  {
-    id: 22,
-    question: "Which JavaScript framework is developed by Facebook?",
-    options: ["Angular", "Vue", "React", "Svelte"],
-    correct: 2,
-    difficulty: "easy",
-    category: "technical",
-    points: 1,
-    timeLimit: 30
-  },
-  {
-    id: 23,
-    question: "What is the purpose of an algorithm?",
-    options: [
-      "To solve a problem step by step",
-      "To store data",
-      "To design UI",
-      "To connect to database"
-    ],
-    correct: 0,
-    difficulty: "easy",
-    category: "technical",
-    points: 1,
-    timeLimit: 30
-  },
-  {
-    id: 24,
-    question: "Which of the following is a mobile app development framework?",
-    options: ["React Native", "React", "Angular", "Vue"],
-    correct: 0,
-    difficulty: "easy",
-    category: "technical",
-    points: 1,
-    timeLimit: 30
-  },
-  {
-    id: 25,
-    question: "What is the main purpose of documentation in software development?",
-    options: [
-      "To explain how the code works",
-      "To write tests",
-      "To deploy the application",
-      "To optimize performance"
-    ],
-    correct: 0,
-    difficulty: "easy",
-    category: "behavioral",
-    points: 1,
-    timeLimit: 30
-  },
+export const quizQuestions = [
+  // CATEGORY: Frontend (10 questions)
+  { id: 1, question: "What is the primary purpose of React's useEffect hook?", options: ["Managing state", "Handling side effects", "Defining components", "Styling elements"], correct: 1, difficulty: "easy", category: "frontend", points: 1, timeLimit: 30 },
+  { id: 2, question: "Explain the difference between Shadow DOM and Virtual DOM.", options: ["They are the same", "Virtual DOM is for performance, Shadow DOM is for scoping", "Shadow DOM is for React, Virtual DOM is for Angular", "Virtual DOM is for styling"], correct: 1, difficulty: "medium", category: "frontend", points: 2, timeLimit: 45 },
+  { id: 3, question: "Which CSS display property is best for 2D layouts?", options: ["flex", "block", "grid", "inline-block"], correct: 2, difficulty: "easy", category: "frontend", points: 1, timeLimit: 30 },
+  { id: 4, question: "What is 'Hoisting' in JavaScript?", options: ["Lifting heavy data", "Moving declarations to the top of their scope", "Stopping code execution", "Removing unused variables"], correct: 1, difficulty: "medium", category: "frontend", points: 2, timeLimit: 45 },
+  { id: 5, question: "In React, what does 'Lifting State Up' mean?", options: ["Moving state to a parent component", "Using Redux", "Using Context API", "Deleting state"], correct: 0, difficulty: "medium", category: "frontend", points: 2, timeLimit: 45 },
+  { id: 6, question: "What is the purpose of 'useMemo' in React?", options: ["Memorizing songs", "Memoizing expensive calculations", "Fetching data", "Defining routes"], correct: 1, difficulty: "medium", category: "frontend", points: 2, timeLimit: 45 },
+  { id: 7, question: "How does the 'Event Loop' work in JS?", options: ["It runs code in circles", "It handles asynchronous tasks and callbacks", "It loops through arrays", "It reloads the page"], correct: 1, difficulty: "hard", category: "frontend", points: 3, timeLimit: 60 },
+  { id: 8, question: "What is the benefit of using TypeScript over JavaScript?", options: ["Faster runtime", "Static typing and better tooling", "Smaller file sizes", "Native browser support"], correct: 1, difficulty: "easy", category: "frontend", points: 1, timeLimit: 30 },
+  { id: 9, question: "Implement a simple debounce function in your mind. What is the core mechanism?", options: ["A loop", "A setTimeout and clearTimeout", "A while block", "An async/await"], correct: 1, difficulty: "hard", category: "frontend", points: 3, timeLimit: 60 },
+  { id: 10, question: "Analytical: Why would you choose Server-Side Rendering (SSR) over Client-Side Rendering (CSR)?", options: ["Easier development", "SEO and faster initial paint", "Better developer experience", "Less server cost"], correct: 1, difficulty: "analytical", category: "frontend", points: 4, timeLimit: 90 },
+  
+  // CATEGORY: Backend (10 questions)
+  { id: 11, question: "What is the main role of middleware in Express.js?", options: ["Handling database schemas", "Processing requests before reaching handlers", "Creating frontend components", "Styling the app"], correct: 1, difficulty: "easy", category: "backend", points: 1, timeLimit: 30 },
+  { id: 12, question: "What does the 'N+1 problem' refer to in database queries?", options: ["Adding 1 to every number", "Inefficient querying of related entities", "A mathematical theorem", "Database timeout"], correct: 1, difficulty: "medium", category: "backend", points: 2, timeLimit: 45 },
+  { id: 13, question: "Difference between JWT and Session-based auth?", options: ["JWT is stateless, Session is stateful", "JWT is for frontend, Session is for backend", "They are the same", "Session is more secure for mobile"], correct: 0, difficulty: "medium", category: "backend", points: 2, timeLimit: 45 },
+  { id: 14, question: "What is a 'Race Condition'?", options: ["A fast API response", "Multiple processes accessing same resource simultaneously", "A bug in the UI", "A network error"], correct: 1, difficulty: "medium", category: "backend", points: 2, timeLimit: 45 },
+  { id: 15, question: "What is the purpose of a Redis cache?", options: ["Storing large files", "High-speed in-memory data storage", "Relational data management", "Logging errors"], correct: 1, difficulty: "easy", category: "backend", points: 1, timeLimit: 30 },
+  { id: 16, question: "How do you handle horizontal scaling in a Node.js app?", options: ["Using more RAM", "Using a Load Balancer and multiple instances", "Rewriting in Go", "Increasing clock speed"], correct: 1, difficulty: "medium", category: "backend", points: 2, timeLimit: 45 },
+  { id: 17, question: "What is 'Dependency Injection'?", options: ["Injecting viruses", "Passing dependencies into a function/class", "A medical term", "A CSS technique"], correct: 1, difficulty: "hard", category: "backend", points: 3, timeLimit: 60 },
+  { id: 18, question: "What is the CAP Theorem?", options: ["Consistency, Availability, Partition Tolerance", "Coding, Automation, Production", "Computing, Analytics, Power", "Complexity, Availability, Performance"], correct: 0, difficulty: "hard", category: "backend", points: 3, timeLimit: 60 },
+  { id: 19, question: "Analytical: When should you use Microservices over a Monolith?", options: ["Always", "Never", "When the system is highly complex and requires independent scaling", "When you have a small team"], correct: 2, difficulty: "analytical", category: "backend", points: 4, timeLimit: 90 },
+  { id: 20, question: "What is Node.js 'Streams' used for?", options: ["Watching videos", "Handling large data efficiently", "Live chat only", "Styling text"], correct: 1, difficulty: "easy", category: "backend", points: 1, timeLimit: 30 },
 
-  // Medium Questions (26-50)
-  {
-    id: 26,
-    question: "What is the time complexity of binary search?",
-    options: ["O(n)", "O(log n)", "O(n^2)", "O(1)"],
-    correct: 1,
-    difficulty: "medium",
-    category: "technical",
-    points: 2,
-    timeLimit: 45
-  },
-  {
-    id: 27,
-    question: "Which design pattern is used to create objects without specifying the exact class?",
-    options: ["Singleton", "Factory", "Observer", "Decorator"],
-    correct: 1,
-    difficulty: "medium",
-    category: "technical",
-    points: 2,
-    timeLimit: 45
-  },
-  {
-    id: 28,
-    question: "What is the purpose of REST in web services?",
-    options: [
-      "To define architectural constraints",
-      "To secure data transmission",
-      "To format XML data",
-      "To compile JavaScript"
-    ],
-    correct: 0,
-    difficulty: "medium",
-    category: "technical",
-    points: 2,
-    timeLimit: 45
-  },
-  {
-    id: 29,
-    question: "Which of the following is a characteristic of microservices architecture?",
-    options: [
-      "Single monolithic application",
-      "Independent deployable services",
-      "Shared database for all services",
-      "Centralized configuration"
-    ],
-    correct: 1,
-    difficulty: "medium",
-    category: "technical",
-    points: 2,
-    timeLimit: 45
-  },
-  {
-    id: 30,
-    question: "What is the purpose of CI/CD in software development?",
-    options: [
-      "Automated testing and deployment",
-      "Code documentation",
-      "User interface design",
-      "Database management"
-    ],
-    correct: 0,
-    difficulty: "medium",
-    category: "technical",
-    points: 2,
-    timeLimit: 45
-  },
-  {
-    id: 31,
-    question: "Which sorting algorithm has the best average-case time complexity?",
-    options: ["Bubble Sort", "Quick Sort", "Selection Sort", "Insertion Sort"],
-    correct: 1,
-    difficulty: "medium",
-    category: "technical",
-    points: 2,
-    timeLimit: 45
-  },
-  {
-    id: 32,
-    question: "What is the purpose of a load balancer?",
-    options: [
-      "To distribute network traffic",
-      "To store user data",
-      "To compile code",
-      "To test applications"
-    ],
-    correct: 0,
-    difficulty: "medium",
-    category: "technical",
-    points: 2,
-    timeLimit: 45
-  },
-  {
-    id: 33,
-    question: "Which of the following is a principle of SOLID design?",
-    options: [
-      "Single Responsibility Principle",
-      "Multiple Responsibility Principle",
-      "Complex Code Principle",
-      "Rigid Design Principle"
-    ],
-    correct: 0,
-    difficulty: "medium",
-    category: "technical",
-    points: 2,
-    timeLimit: 45
-  },
-  {
-    id: 34,
-    question: "What is the purpose of indexing in databases?",
-    options: [
-      "To speed up data retrieval",
-      "To increase storage space",
-      "To encrypt data",
-      "To backup data"
-    ],
-    correct: 0,
-    difficulty: "medium",
-    category: "technical",
-    points: 2,
-    timeLimit: 45
-  },
-  {
-    id: 35,
-    question: "Which of the following is a characteristic of functional programming?",
-    options: [
-      "Immutable data",
-      "Mutable state",
-      "Object-oriented design",
-      "Class inheritance"
-    ],
-    correct: 0,
-    difficulty: "medium",
-    category: "technical",
-    points: 2,
-    timeLimit: 45
-  },
-  {
-    id: 36,
-    question: "What is the purpose of a container in DevOps?",
-    options: [
-      "To package applications with dependencies",
-      "To store source code",
-      "To compile programs",
-      "To test user interfaces"
-    ],
-    correct: 0,
-    difficulty: "medium",
-    category: "technical",
-    points: 2,
-    timeLimit: 45
-  },
-  {
-    id: 37,
-    question: "Which of the following is a NoSQL database type?",
-    options: ["Document-based", "Table-based", "Relational", "Hierarchical"],
-    correct: 0,
-    difficulty: "medium",
-    category: "technical",
-    points: 2,
-    timeLimit: 45
-  },
-  {
-    id: 38,
-    question: "What is the purpose of middleware in Express.js?",
-    options: [
-      "To process requests before route handlers",
-      "To store user data",
-      "To render HTML",
-      "To connect to database"
-    ],
-    correct: 0,
-    difficulty: "medium",
-    category: "technical",
-    points: 2,
-    timeLimit: 45
-  },
-  {
-    id: 39,
-    question: "Which of the following is a characteristic of a good API design?",
-    options: [
-      "Consistent and intuitive endpoints",
-      "Complex authentication",
-      "Large response payloads",
-      "Frequent breaking changes"
-    ],
-    correct: 0,
-    difficulty: "medium",
-    category: "technical",
-    points: 2,
-    timeLimit: 45
-  },
-  {
-    id: 40,
-    question: "What is the purpose of caching in web applications?",
-    options: [
-      "To improve performance by storing frequently accessed data",
-      "To increase security",
-      "To backup data",
-      "To compile code"
-    ],
-    correct: 0,
-    difficulty: "medium",
-    category: "technical",
-    points: 2,
-    timeLimit: 45
-  },
-  {
-    id: 41,
-    question: "Which of the following is a type of software testing?",
-    options: ["Integration testing", "Code compilation", "API design", "Database indexing"],
-    correct: 0,
-    difficulty: "medium",
-    category: "technical",
-    points: 2,
-    timeLimit: 45
-  },
-  {
-    id: 42,
-    question: "What is the purpose of a CDN (Content Delivery Network)?",
-    options: [
-      "To distribute content globally for faster access",
-      "To store source code",
-      "To compile applications",
-      "To test user interfaces"
-    ],
-    correct: 0,
-    difficulty: "medium",
-    category: "technical",
-    points: 2,
-    timeLimit: 45
-  },
-  {
-    id: 43,
-    question: "Which of the following is a characteristic of event-driven architecture?",
-    options: [
-      "Components communicate through events",
-      "Synchronous communication",
-      "Centralized control",
-      "Monolithic structure"
-    ],
-    correct: 0,
-    difficulty: "medium",
-    category: "technical",
-    points: 2,
-    timeLimit: 45
-  },
-  {
-    id: 44,
-    question: "What is the purpose of a reverse proxy?",
-    options: [
-      "To forward client requests to appropriate servers",
-      "To store user data",
-      "To compile code",
-      "To test applications"
-    ],
-    correct: 0,
-    difficulty: "medium",
-    category: "technical",
-    points: 2,
-    timeLimit: 45
-  },
-  {
-    id: 45,
-    question: "Which of the following is a principle of agile development?",
-    options: [
-      "Working software over comprehensive documentation",
-      "Detailed planning over working software",
-      "Large teams over small teams",
-      "Fixed requirements over changing requirements"
-    ],
-    correct: 0,
-    difficulty: "medium",
-    category: "behavioral",
-    points: 2,
-    timeLimit: 45
-  },
-  {
-    id: 46,
-    question: "What is the purpose of a state management library in React?",
-    options: [
-      "To manage application state across components",
-      "To style components",
-      "To handle routing",
-      "To make API calls"
-    ],
-    correct: 0,
-    difficulty: "medium",
-    category: "technical",
-    points: 2,
-    timeLimit: 45
-  },
-  {
-    id: 47,
-    question: "Which of the following is a characteristic of a scalable system?",
-    options: [
-      "Can handle increased load by adding resources",
-      "Fixed capacity",
-      "Single point of failure",
-      "Monolithic architecture"
-    ],
-    correct: 0,
-    difficulty: "medium",
-    category: "technical",
-    points: 2,
-    timeLimit: 45
-  },
-  {
-    id: 48,
-    question: "What is the purpose of a build tool like Webpack?",
-    options: [
-      "To bundle and optimize assets",
-      "To write tests",
-      "To deploy applications",
-      "To design user interfaces"
-    ],
-    correct: 0,
-    difficulty: "medium",
-    category: "technical",
-    points: 2,
-    timeLimit: 45
-  },
-  {
-    id: 49,
-    question: "Which of the following is a type of database join?",
-    options: ["INNER JOIN", "SELECT JOIN", "UPDATE JOIN", "DELETE JOIN"],
-    correct: 0,
-    difficulty: "medium",
-    category: "technical",
-    points: 2,
-    timeLimit: 45
-  },
-  {
-    id: 50,
-    question: "What is the purpose of environment variables?",
-    options: [
-      "To store configuration outside of code",
-      "To write documentation",
-      "To compile applications",
-      "To test user interfaces"
-    ],
-    correct: 0,
-    difficulty: "medium",
-    category: "technical",
-    points: 2,
-    timeLimit: 45
-  },
+  // CATEGORY: Database (10 questions)
+  { id: 21, question: "What is a 'Primary Key'?", options: ["The first key you use", "A unique identifier for a record", "A key to the server room", "A common word"], correct: 1, difficulty: "easy", category: "database", points: 1, timeLimit: 30 },
+  { id: 22, question: "Explain 'Normalization' in databases.", options: ["Making things normal", "Reducing data redundancy", "Increasing data size", "Deleting old records"], correct: 1, difficulty: "medium", category: "database", points: 2, timeLimit: 45 },
+  { id: 23, question: "Difference between SQL and NoSQL?", options: ["SQL is for data, NoSQL is for images", "Relational vs Non-Relational", "NoSQL is faster for everything", "SQL is old, NoSQL is new"], correct: 1, difficulty: "easy", category: "database", points: 1, timeLimit: 30 },
+  { id: 24, question: "What is an 'Index' in a database used for?", options: ["Ordering books", "Speeding up data retrieval", "Creating unique IDs", "Hiding data"], correct: 1, difficulty: "easy", category: "database", points: 1, timeLimit: 30 },
+  { id: 25, question: "What is a 'Foreign Key'?", options: ["A key from another country", "A link between two tables", "A secret password", "An optional field"], correct: 1, difficulty: "medium", category: "database", points: 2, timeLimit: 45 },
+  { id: 26, question: "What does 'ACID' stand for?", options: ["Atomicity, Consistency, Isolation, Durability", "Access, Control, Info, Data", "Auto, Change, Input, Delete", "Always, Correct, In, Database"], correct: 0, difficulty: "hard", category: "database", points: 3, timeLimit: 60 },
+  { id: 27, question: "What is 'Sharding'?", options: ["Breaking glass", "Distributing data across multiple machines", "Deleting small chunks of data", "Hiding data in shards"], correct: 1, difficulty: "hard", category: "database", points: 3, timeLimit: 60 },
+  { id: 28, question: "What is a 'Deadlock'?", options: ["A broken lock", "Two transactions waiting for each other", "A system crash", "A deleted record"], correct: 1, difficulty: "medium", category: "database", points: 2, timeLimit: 45 },
+  { id: 29, question: "Analytical: Why use MongoDB over PostgreSQL for a real-time analytics app?", options: ["Easier to learn", "Schema flexibility and high write throughput", "Better consistency", "SQL is too slow"], correct: 1, difficulty: "analytical", category: "database", points: 4, timeLimit: 90 },
+  { id: 30, question: "What is a 'View' in SQL?", options: ["A picture", "A virtual table based on a query", "The UI", "A database window"], correct: 1, difficulty: "medium", category: "database", points: 2, timeLimit: 45 },
 
-  // Hard Questions (51-75)
-  {
-    id: 51,
-    question: "What is the time complexity of Dijkstra's algorithm with a binary heap?",
-    options: ["O(V^2)", "O(E + V log V)", "O(V log V)", "O(E log V)"],
-    correct: 1,
-    difficulty: "hard",
-    category: "technical",
-    points: 3,
-    timeLimit: 60
-  },
-  {
-    id: 52,
-    question: "Which of the following is a characteristic of CAP theorem?",
-    options: [
-      "A distributed system can only guarantee 2 of 3 properties",
-      "All distributed systems guarantee all 3 properties",
-      "Only consistency is important",
-      "Only availability is important"
-    ],
-    correct: 0,
-    difficulty: "hard",
-    category: "technical",
-    points: 3,
-    timeLimit: 60
-  },
-  {
-    id: 53,
-    question: "What is the purpose of a distributed hash table?",
-    options: [
-      "To distribute data across multiple nodes",
-      "To hash passwords",
-      "To compile code",
-      "To store local files"
-    ],
-    correct: 0,
-    difficulty: "hard",
-    category: "technical",
-    points: 3,
-    timeLimit: 60
-  },
-  {
-    id: 54,
-    question: "Which of the following is a characteristic of eventual consistency?",
-    options: [
-      "System will become consistent over time",
-      "Immediate consistency across all nodes",
-      "Strong consistency guarantees",
-      "No consistency guarantees"
-    ],
-    correct: 0,
-    difficulty: "hard",
-    category: "technical",
-    points: 3,
-    timeLimit: 60
-  },
-  {
-    id: 55,
-    question: "What is the purpose of a circuit breaker pattern?",
-    options: [
-      "To prevent cascading failures",
-      "To improve performance",
-      "To store data",
-      "To compile code"
-    ],
-    correct: 0,
-    difficulty: "hard",
-    category: "technical",
-    points: 3,
-    timeLimit: 60
-  },
-  {
-    id: 56,
-    question: "Which of the following is a characteristic of a distributed transaction?",
-    options: [
-      "Involves multiple nodes/resources",
-      "Single node transaction",
-      "No rollback mechanism",
-      "Immediate commit"
-    ],
-    correct: 0,
-    difficulty: "hard",
-    category: "technical",
-    points: 3,
-    timeLimit: 60
-  },
-  {
-    id: 57,
-    question: "What is the purpose of a message queue in distributed systems?",
-    options: [
-      "Asynchronous communication between services",
-      "Synchronous communication",
-      "Data storage",
-      "Code compilation"
-    ],
-    correct: 0,
-    difficulty: "hard",
-    category: "technical",
-    points: 3,
-    timeLimit: 60
-  },
-  {
-    id: 58,
-    question: "Which of the following is a characteristic of sharding?",
-    options: [
-      "Horizontal partitioning of data",
-      "Vertical partitioning of data",
-      "Data replication",
-      "Data backup"
-    ],
-    correct: 0,
-    difficulty: "hard",
-    category: "technical",
-    points: 3,
-    timeLimit: 60
-  },
-  {
-    id: 59,
-    question: "What is the purpose of a consensus algorithm?",
-    options: [
-      "To achieve agreement among distributed nodes",
-      "To optimize performance",
-      "To store data",
-      "To compile code"
-    ],
-    correct: 0,
-    difficulty: "hard",
-    category: "technical",
-    points: 3,
-    timeLimit: 60
-  },
-  {
-    id: 60,
-    question: "Which of the following is a characteristic of a distributed cache?",
-    options: [
-      "Cache distributed across multiple nodes",
-      "Single node cache",
-      "Database storage",
-      "File system storage"
-    ],
-    correct: 0,
-    difficulty: "hard",
-    category: "technical",
-    points: 3,
-    timeLimit: 60
-  },
-  {
-    id: 61,
-    question: "What is the purpose of a service mesh?",
-    options: [
-      "To manage service-to-service communication",
-      "To store user data",
-      "To compile applications",
-      "To design user interfaces"
-    ],
-    correct: 0,
-    difficulty: "hard",
-    category: "technical",
-    points: 3,
-    timeLimit: 60
-  },
-  {
-    id: 62,
-    question: "Which of the following is a characteristic of serverless architecture?",
-    options: [
-      "No server management required",
-      "Fixed server allocation",
-      "Manual scaling",
-      "Long-running processes"
-    ],
-    correct: 0,
-    difficulty: "hard",
-    category: "technical",
-    points: 3,
-    timeLimit: 60
-  },
-  {
-    id: 63,
-    question: "What is the purpose of a distributed tracing system?",
-    options: [
-      "To track requests across multiple services",
-      "To store user data",
-      "To compile code",
-      "To test applications"
-    ],
-    correct: 0,
-    difficulty: "hard",
-    category: "technical",
-    points: 3,
-    timeLimit: 60
-  },
-  {
-    id: 64,
-    question: "Which of the following is a characteristic of a polyglot persistence system?",
-    options: [
-      "Using multiple database technologies",
-      "Single database technology",
-      "No database usage",
-      "Only SQL databases"
-    ],
-    correct: 0,
-    difficulty: "hard",
-    category: "technical",
-    points: 3,
-    timeLimit: 60
-  },
-  {
-    id: 65,
-    question: "What is the purpose of a distributed lock?",
-    options: [
-      "To coordinate access to shared resources",
-      "To improve performance",
-      "To store data",
-      "To compile code"
-    ],
-    correct: 0,
-    difficulty: "hard",
-    category: "technical",
-    points: 3,
-    timeLimit: 60
-  },
-  {
-    id: 66,
-    question: "Which of the following is a characteristic of a CQRS pattern?",
-    options: [
-      "Separate read and write models",
-      "Single model for reads and writes",
-      "No separation of concerns",
-      "Only write operations"
-    ],
-    correct: 0,
-    difficulty: "hard",
-    category: "technical",
-    points: 3,
-    timeLimit: 60
-  },
-  {
-    id: 67,
-    question: "What is the purpose of a distributed file system?",
-    options: [
-      "To provide file access across multiple machines",
-      "To store local files only",
-      "To compile code",
-      "To test applications"
-    ],
-    correct: 0,
-    difficulty: "hard",
-    category: "technical",
-    points: 3,
-    timeLimit: 60
-  },
-  {
-    id: 68,
-    question: "Which of the following is a characteristic of a blockchain?",
-    options: [
-      "Immutable distributed ledger",
-      "Centralized database",
-      "Mutable data",
-      "Single point of failure"
-    ],
-    correct: 0,
-    difficulty: "hard",
-    category: "technical",
-    points: 3,
-    timeLimit: 60
-  },
-  {
-    id: 69,
-    question: "What is the purpose of a distributed search engine?",
-    options: [
-      "To search across multiple nodes",
-      "To search local files only",
-      "To compile code",
-      "To store data"
-    ],
-    correct: 0,
-    difficulty: "hard",
-    category: "technical",
-    points: 3,
-    timeLimit: 60
-  },
-  {
-    id: 70,
-    question: "Which of the following is a characteristic of a graph database?",
-    options: [
-      "Stores data in nodes and relationships",
-      "Tabular data structure",
-      "Document-based storage",
-      "Key-value pairs"
-    ],
-    correct: 0,
-    difficulty: "hard",
-    category: "technical",
-    points: 3,
-    timeLimit: 60
-  },
-  {
-    id: 71,
-    question: "What is the purpose of a distributed computing framework?",
-    options: [
-      "To process large datasets across multiple nodes",
-      "To process data on a single machine",
-      "To store user data",
-      "To compile applications"
-    ],
-    correct: 0,
-    difficulty: "hard",
-    category: "technical",
-    points: 3,
-    timeLimit: 60
-  },
-  {
-    id: 72,
-    question: "Which of the following is a characteristic of a time-series database?",
-    options: [
-      "Optimized for time-based data",
-      "General purpose database",
-      "Document storage",
-      "Graph structure"
-    ],
-    correct: 0,
-    difficulty: "hard",
-    category: "technical",
-    points: 3,
-    timeLimit: 60
-  },
-  {
-    id: 73,
-    question: "What is the purpose of a distributed configuration service?",
-    options: [
-      "To manage configuration across multiple services",
-      "To store user data",
-      "To compile code",
-      "To test applications"
-    ],
-    correct: 0,
-    difficulty: "hard",
-    category: "technical",
-    points: 3,
-    timeLimit: 60
-  },
-  {
-    id: 74,
-    question: "Which of the following is a characteristic of a stream processing system?",
-    options: [
-      "Processes data in real-time",
-      "Batch processing only",
-      "No real-time capabilities",
-      "Static data analysis"
-    ],
-    correct: 0,
-    difficulty: "hard",
-    category: "technical",
-    points: 3,
-    timeLimit: 60
-  },
-  {
-    id: 75,
-    question: "What is the purpose of a distributed monitoring system?",
-    options: [
-      "To monitor multiple services and nodes",
-      "To monitor a single service",
-      "To compile code",
-      "To store user data"
-    ],
-    correct: 0,
-    difficulty: "hard",
-    category: "technical",
-    points: 3,
-    timeLimit: 60
-  },
+  // CATEGORY: DevOps (10 questions)
+  { id: 31, question: "What is Docker?", options: ["A boat", "A containerization platform", "A text editor", "A programming language"], correct: 1, difficulty: "easy", category: "devops", points: 1, timeLimit: 30 },
+  { id: 32, question: "What is CI/CD?", options: ["Code Indexing", "Continuous Integration and Continuous Deployment", "Computer Intelligence", "Corporate Identity"], correct: 1, difficulty: "easy", category: "devops", points: 1, timeLimit: 30 },
+  { id: 33, question: "What is Kubernetes?", options: ["A Google tool", "An orchestration system for containers", "A cloud provider", "A type of server"], correct: 1, difficulty: "medium", category: "devops", points: 2, timeLimit: 45 },
+  { id: 34, question: "What is 'Infrastructure as Code' (IaC)?", options: ["Building houses with code", "Managing infrastructure via config files", "Coding on a server", "Virtual reality"], correct: 1, difficulty: "medium", category: "devops", points: 2, timeLimit: 45 },
+  { id: 35, question: "What is a 'Blue-Green Deployment'?", options: ["Using two different colors", "A strategy to reduce downtime by running two identical environments", "A UI theme", "A testing phase"], correct: 1, difficulty: "medium", category: "devops", points: 2, timeLimit: 45 },
+  { id: 36, question: "What is 'Observability' in DevOps?", options: ["Watching developers", "Monitoring logs, metrics, and traces", "Looking at the screen", "Checking for bugs"], correct: 1, difficulty: "hard", category: "devops", points: 3, timeLimit: 60 },
+  { id: 37, question: "What is a 'Canary Release'?", options: ["Releasing a bird", "Gradually rolling out a change to a small subset of users", "A song", "A beta test"], correct: 1, difficulty: "medium", category: "devops", points: 2, timeLimit: 45 },
+  { id: 38, question: "What is 'Serverless' computing?", options: ["Computing without servers", "Abstracting server management from developers", "Using only local files", "A myth"], correct: 1, difficulty: "easy", category: "devops", points: 1, timeLimit: 30 },
+  { id: 39, question: "Analytical: How does 'Site Reliability Engineering' (SRE) differ from DevOps?", options: ["They are the same", "SRE is a specific implementation of DevOps principles", "SRE is for frontend", "DevOps is for small teams"], correct: 1, difficulty: "analytical", category: "devops", points: 4, timeLimit: 90 },
+  { id: 40, question: "What is 'GitOps'?", options: ["Operations using Git as source of truth", "Uploading code to Git", "A Git command", "A styling library"], correct: 0, difficulty: "hard", category: "devops", points: 3, timeLimit: 60 },
 
-  // Analytical Questions (76-100)
-  {
-    id: 76,
-    question: "A company has 100 employees. If 20% work remotely, 30% work hybrid, and the rest work in-office, how many employees work in-office?",
-    options: ["50", "60", "40", "70"],
-    correct: 0,
-    difficulty: "analytical",
-    category: "logical_reasoning",
-    points: 4,
-    timeLimit: 90
-  },
-  {
-    id: 77,
-    question: "If a project takes 10 days to complete with 5 developers, how many days would it take with 10 developers (assuming linear scaling)?",
-    options: ["5 days", "10 days", "2 days", "20 days"],
-    correct: 0,
-    difficulty: "analytical",
-    category: "problem_solving",
-    points: 4,
-    timeLimit: 90
-  },
-  {
-    id: 78,
-    question: "A server can handle 1000 requests per minute. If traffic increases by 50%, how many requests per minute can the server handle after scaling?",
-    options: ["1500", "1000", "2000", "500"],
-    correct: 0,
-    difficulty: "analytical",
-    category: "problem_solving",
-    points: 4,
-    timeLimit: 90
-  },
-  {
-    id: 79,
-    question: "If a database query takes 2 seconds to execute and processes 100 records, how long would it take to process 500 records (assuming linear scaling)?",
-    options: ["10 seconds", "2 seconds", "5 seconds", "20 seconds"],
-    correct: 0,
-    difficulty: "analytical",
-    category: "problem_solving",
-    points: 4,
-    timeLimit: 90
-  },
-  {
-    id: 80,
-    question: "A team has 8 members. If they need to form pairs for code review, how many unique pairs can be formed?",
-    options: ["28", "8", "16", "64"],
-    correct: 0,
-    difficulty: "analytical",
-    category: "logical_reasoning",
-    points: 4,
-    timeLimit: 90
-  },
-  {
-    id: 81,
-    question: "If a bug has a 30% chance of occurring in each release, what is the probability that it occurs in at least one of three independent releases?",
-    options: ["65.7%", "30%", "90%", "70%"],
-    correct: 0,
-    difficulty: "analytical",
-    category: "logical_reasoning",
-    points: 4,
-    timeLimit: 90
-  },
-  {
-    id: 82,
-    question: "A website has 10,000 daily visitors. If the conversion rate is 2%, how many visitors convert to customers?",
-    options: ["200", "100", "500", "1000"],
-    correct: 0,
-    difficulty: "analytical",
-    category: "problem_solving",
-    points: 4,
-    timeLimit: 90
-  },
-  {
-    id: 83,
-    question: "If a developer can write 100 lines of code per day, how many days would it take to write a 10,000-line application?",
-    options: ["100 days", "10 days", "50 days", "200 days"],
-    correct: 0,
-    difficulty: "analytical",
-    category: "problem_solving",
-    points: 4,
-    timeLimit: 90
-  },
-  {
-    id: 84,
-    question: "A system has 99.9% uptime. How many minutes of downtime is this per month (30 days)?",
-    options: ["43.2 minutes", "10 minutes", "60 minutes", "30 minutes"],
-    correct: 0,
-    difficulty: "analytical",
-    category: "problem_solving",
-    points: 4,
-    timeLimit: 90
-  },
-  {
-    id: 85,
-    question: "If a test suite has 100 tests and 5 fail, what is the test success rate?",
-    options: ["95%", "90%", "85%", "99%"],
-    correct: 0,
-    difficulty: "analytical",
-    category: "problem_solving",
-    points: 4,
-    timeLimit: 90
-  },
-  {
-    id: 86,
-    question: "A company spends $10,000 on cloud services monthly. If they optimize and reduce costs by 25%, what is the new monthly cost?",
-    options: ["$7,500", "$8,000", "$9,000", "$6,000"],
-    correct: 0,
-    difficulty: "analytical",
-    category: "problem_solving",
-    points: 4,
-    timeLimit: 90
-  },
-  {
-    id: 87,
-    question: "If a team completes 20 sprints in a year and each sprint is 2 weeks, what percentage of the year is spent in active development?",
-    options: ["76.9%", "50%", "80%", "100%"],
-    correct: 0,
-    difficulty: "analytical",
-    category: "problem_solving",
-    points: 4,
-    timeLimit: 90
-  },
-  {
-    id: 88,
-    question: "A database has 1 million records. If the average record size is 1KB, what is the total database size?",
-    options: ["1 GB", "100 MB", "10 GB", "1 TB"],
-    correct: 0,
-    difficulty: "analytical",
-    category: "problem_solving",
-    points: 4,
-    timeLimit: 90
-  },
-  {
-    id: 89,
-    question: "If an API has a rate limit of 1000 requests per hour, how many requests per second is this approximately?",
-    options: ["0.28", "16.67", "1000", "60"],
-    correct: 0,
-    difficulty: "analytical",
-    category: "problem_solving",
-    points: 4,
-    timeLimit: 90
-  },
-  {
-    id: 90,
-    question: "A team of 5 developers works 8 hours daily. If they work on a project for 10 days, what is the total person-hours invested?",
-    options: ["400 hours", "80 hours", "200 hours", "500 hours"],
-    correct: 0,
-    difficulty: "analytical",
-    category: "problem_solving",
-    points: 4,
-    timeLimit: 90
-  },
-  {
-    id: 91,
-    question: "If a website loads in 2 seconds and we want to improve it by 50%, what should be the new loading time?",
-    options: ["1 second", "1.5 seconds", "0.5 seconds", "3 seconds"],
-    correct: 0,
-    difficulty: "analytical",
-    category: "problem_solving",
-    points: 4,
-    timeLimit: 90
-  },
-  {
-    id: 92,
-    question: "A company has 3 development teams. If each team has 4 members and 2 members are shared between teams, how many unique developers are there?",
-    options: ["10", "12", "8", "14"],
-    correct: 0,
-    difficulty: "analytical",
-    category: "logical_reasoning",
-    points: 4,
-    timeLimit: 90
-  },
-  {
-    id: 93,
-    question: "If a server's CPU usage is 60% and memory usage is 40%, what is the average resource utilization?",
-    options: ["50%", "60%", "40%", "100%"],
-    correct: 0,
-    difficulty: "analytical",
-    category: "problem_solving",
-    points: 4,
-    timeLimit: 90
-  },
-  {
-    id: 94,
-    question: "A project has 5 phases. If each phase takes 20% of the total time and phase 3 is delayed by 50%, what is the total project delay?",
-    options: ["10%", "20%", "5%", "50%"],
-    correct: 0,
-    difficulty: "analytical",
-    category: "problem_solving",
-    points: 4,
-    timeLimit: 90
-  },
-  {
-    id: 95,
-    question: "If a codebase has 10,000 lines and 20% are comments, how many lines of actual code are there?",
-    options: ["8,000", "2,000", "10,000", "12,000"],
-    correct: 0,
-    difficulty: "analytical",
-    category: "problem_solving",
-    points: 4,
-    timeLimit: 90
-  },
-  {
-    id: 96,
-    question: "A system processes 100 transactions per second. If we need to process 500 transactions per second, by what factor do we need to scale?",
-    options: ["5x", "2x", "10x", "50x"],
-    correct: 0,
-    difficulty: "analytical",
-    category: "problem_solving",
-    points: 4,
-    timeLimit: 90
-  },
-  {
-    id: 97,
-    question: "If a team fixes 10 bugs per week and there are 50 bugs to fix, how many weeks will it take?",
-    options: ["5 weeks", "10 weeks", "2 weeks", "50 weeks"],
-    correct: 0,
-    difficulty: "analytical",
-    category: "problem_solving",
-    points: 4,
-    timeLimit: 90
-  },
-  {
-    id: 98,
-    question: "A website has a bounce rate of 40%. If 1000 visitors come, how many stay on the site?",
-    options: ["600", "400", "1000", "500"],
-    correct: 0,
-    difficulty: "analytical",
-    category: "problem_solving",
-    points: 4,
-    timeLimit: 90
-  },
-  {
-    id: 99,
-    question: "If a deployment pipeline has 5 stages and each stage has a 95% success rate, what is the overall success probability?",
-    options: ["77.4%", "95%", "75%", "100%"],
-    correct: 0,
-    difficulty: "analytical",
-    category: "logical_reasoning",
-    points: 4,
-    timeLimit: 90
-  },
-  {
-    id: 100,
-    question: "A company wants to reduce technical debt from 80% to 20%. By what percentage do they need to improve?",
-    options: ["75%", "60%", "80%", "25%"],
-    correct: 0,
-    difficulty: "analytical",
-    category: "problem_solving",
-    points: 4,
-    timeLimit: 90
-  }
+  // CATEGORY: Mobile (10 questions)
+  { id: 41, question: "What is React Native?", options: ["A browser", "A framework for building native apps using React", "A CSS library", "An Android emulator"], correct: 1, difficulty: "easy", category: "mobile", points: 1, timeLimit: 30 },
+  { id: 42, question: "Difference between Flutter and React Native?", options: ["Dart vs JavaScript", "Google vs Facebook", "Compiled vs Interpreted", "All of the above"], correct: 3, difficulty: "medium", category: "mobile", points: 2, timeLimit: 45 },
+  { id: 43, question: "What is 'Bridging' in React Native?", options: ["Crossing a river", "Communication between JS and Native code", "Connecting two screens", "Styling components"], correct: 1, difficulty: "medium", category: "mobile", points: 2, timeLimit: 45 },
+  { id: 44, question: "What is 'Expo'?", options: ["A trade show", "A framework and platform for universal React applications", "A build tool only", "A cloud provider"], correct: 1, difficulty: "easy", category: "mobile", points: 1, timeLimit: 30 },
+  { id: 45, question: "What is 'Safe Area View'?", options: ["A locked screen", "A component to handle device notches and status bars", "A backup system", "A UI theme"], correct: 1, difficulty: "easy", category: "mobile", points: 1, timeLimit: 30 },
+  { id: 46, question: "What is 'Deep Linking'?", options: ["Linking to deep web", "Linking directly to a specific screen in the app", "A complex URL", "SEO for apps"], correct: 1, difficulty: "medium", category: "mobile", points: 2, timeLimit: 45 },
+  { id: 47, question: "How do you handle offline data in mobile apps?", options: ["Using cookies", "Using SQLite or AsyncStorage", "Using only RAM", "You can't"], correct: 1, difficulty: "medium", category: "mobile", points: 2, timeLimit: 45 },
+  { id: 48, question: "What is a 'Bundle' in mobile development?", options: ["A package of goods", "Compiled code and resources for distribution", "A zip file", "A folder"], correct: 1, difficulty: "easy", category: "mobile", points: 1, timeLimit: 30 },
+  { id: 49, question: "Analytical: Why would you choose Native (Swift/Kotlin) over Cross-Platform (RN/Flutter)?", options: ["Easier to learn", "Performance and access to latest platform features", "Faster development", "Lower cost"], correct: 1, difficulty: "analytical", category: "mobile", points: 4, timeLimit: 90 },
+  { id: 50, question: "What is 'Hot Reloading'?", options: ["Heating the phone", "Applying code changes without restarting the app state", "A fast build", "A server restart"], correct: 1, difficulty: "medium", category: "mobile", points: 2, timeLimit: 45 },
+
+  // CATEGORY: Fullstack (10 questions)
+  { id: 51, question: "What is 'Hydration' in SSR?", options: ["Drinking water", "Attaching event listeners to server-rendered HTML", "Cleaning the database", "Compiling code"], correct: 1, difficulty: "hard", category: "fullstack", points: 3, timeLimit: 60 },
+  { id: 52, question: "What is 'Cross-Origin Resource Sharing' (CORS)?", options: ["Sharing resources on Git", "A security feature to allow/block cross-origin requests", "A data sharing protocol", "A frontend library"], correct: 1, difficulty: "easy", category: "fullstack", points: 1, timeLimit: 30 },
+  { id: 53, question: "What is 'Server-Side Rendering' (SSR)?", options: ["Rendering images", "Generating HTML on the server for each request", "Building apps on servers", "A database feature"], correct: 1, difficulty: "easy", category: "fullstack", points: 1, timeLimit: 30 },
+  { id: 54, question: "What is 'Client-Side Rendering' (CSR)?", options: ["Rendering for clients", "Generating HTML in the browser using JavaScript", "Styling on the client", "A browser feature"], correct: 1, difficulty: "easy", category: "fullstack", points: 1, timeLimit: 30 },
+  { id: 55, question: "What is 'Static Site Generation' (SSG)?", options: ["Building sites once at build time", "Creating static images", "A CSS technique", "A manual process"], correct: 0, difficulty: "medium", category: "fullstack", points: 2, timeLimit: 45 },
+  { id: 56, question: "Difference between GraphQL and REST?", options: ["JSON vs XML", "Single endpoint with flexible queries vs multiple endpoints", "GraphQL is faster", "REST is for mobile"], correct: 1, difficulty: "medium", category: "fullstack", points: 2, timeLimit: 45 },
+  { id: 57, question: "What is 'Micro-frontends'?", options: ["Small websites", "An architectural style where frontend apps are composed of independent fragments", "A mobile feature", "A CSS library"], correct: 1, difficulty: "hard", category: "fullstack", points: 3, timeLimit: 60 },
+  { id: 58, question: "What is 'JAMstack'?", options: ["JavaScript, APIs, and Markup", "Java, Android, and Mobile", "Just A Mobile app", "JSON, AJAX, and MongoDB"], correct: 0, difficulty: "medium", category: "fullstack", points: 2, timeLimit: 45 },
+  { id: 59, question: "Analytical: How does 'Edge Computing' benefit a fullstack application?", options: ["Lowers server cost", "Reduces latency by processing data closer to the user", "Easier to deploy", "Better security"], correct: 1, difficulty: "analytical", category: "fullstack", points: 4, timeLimit: 90 },
+  { id: 60, question: "What is 'Throttling' in API calls?", options: ["Stopping the server", "Limiting the number of requests a user can make", "Speeding up calls", "A database lock"], correct: 1, difficulty: "medium", category: "fullstack", points: 2, timeLimit: 45 },
+
+  // CATEGORY: Data Science (10 questions)
+  { id: 61, question: "What is 'Overfitting' in ML?", options: ["Too much data", "Model performing well on training but poor on test data", "Model is too small", "Data is missing"], correct: 1, difficulty: "medium", category: "datascience", points: 2, timeLimit: 45 },
+  { id: 62, question: "Difference between Supervised and Unsupervised Learning?", options: ["With vs without labels", "With vs without humans", "Fast vs Slow", "Math vs Code"], correct: 0, difficulty: "easy", category: "datascience", points: 1, timeLimit: 30 },
+  { id: 63, question: "What is 'Feature Engineering'?", options: ["Building new features in an app", "Selecting and transforming variables for a model", "Mechanical engineering", "Testing code"], correct: 1, difficulty: "medium", category: "datascience", points: 2, timeLimit: 45 },
+  { id: 64, question: "What is a 'Random Forest'?", options: ["A group of trees", "An ensemble learning method for classification/regression", "A chaotic dataset", "A search algorithm"], correct: 1, difficulty: "medium", category: "datascience", points: 2, timeLimit: 45 },
+  { id: 65, question: "What is 'Deep Learning'?", options: ["Thinking deeply", "Neural networks with many layers", "Complex math", "A database type"], correct: 1, difficulty: "easy", category: "datascience", points: 1, timeLimit: 30 },
+  { id: 66, question: "What is 'Reinforcement Learning'?", options: ["Learning by repetition", "Learning through rewards and punishments", "Studying hard", "Training with labels"], correct: 1, difficulty: "hard", category: "datascience", points: 3, timeLimit: 60 },
+  { id: 67, question: "What is a 'Confusion Matrix'?", options: ["A confusing table", "A table used to evaluate the performance of a classification model", "A math error", "A data leak"], correct: 1, difficulty: "medium", category: "datascience", points: 2, timeLimit: 45 },
+  { id: 68, question: "What is 'Data Cleaning'?", options: ["Wiping the drive", "Handling missing values and removing noise", "Deleting old data", "Formatting text"], correct: 1, difficulty: "easy", category: "datascience", points: 1, timeLimit: 30 },
+  { id: 69, question: "Analytical: Why is 'Explainability' (XAI) important in medical AI applications?", options: ["For marketing", "To build trust and understand the reasoning behind a diagnosis", "To make it faster", "To save money"], correct: 1, difficulty: "analytical", category: "datascience", points: 4, timeLimit: 90 },
+  { id: 70, question: "What is 'Big Data'?", options: ["Large file sizes", "Datasets that are too large/complex for traditional software", "A big hard drive", "Cloud storage"], correct: 1, difficulty: "easy", category: "datascience", points: 1, timeLimit: 30 },
+
+  // CATEGORY: Cybersecurity (10 questions)
+  { id: 71, question: "What is 'SQL Injection'?", options: ["Adding data to SQL", "Inserting malicious SQL code into a query", "Optimizing SQL", "Deleting SQL tables"], correct: 1, difficulty: "easy", category: "cybersecurity", points: 1, timeLimit: 30 },
+  { id: 72, question: "What is 'Cross-Site Scripting' (XSS)?", options: ["Linking two sites", "Injecting malicious scripts into web pages", "A CSS feature", "A server bug"], correct: 1, difficulty: "medium", category: "cybersecurity", points: 2, timeLimit: 45 },
+  { id: 73, question: "What is 'Salting' in password hashing?", options: ["Adding salt to food", "Adding random data to a password before hashing", "Making it taste better", "Deleting the password"], correct: 1, difficulty: "medium", category: "cybersecurity", points: 2, timeLimit: 45 },
+  { id: 74, question: "What is 'Two-Factor Authentication' (2FA)?", options: ["Two passwords", "Requiring two different forms of identification", "A long password", "Checking twice"], correct: 1, difficulty: "easy", category: "cybersecurity", points: 1, timeLimit: 30 },
+  { id: 75, question: "What is 'Phishing'?", options: ["Catching fish", "Fraudulent attempts to obtain sensitive info", "A network tool", "A type of virus"], correct: 1, difficulty: "easy", category: "cybersecurity", points: 1, timeLimit: 30 },
+  { id: 76, question: "What is 'Encryption'?", options: ["Hiding files", "Converting information into a secret code", "Deleting data", "Compressing files"], correct: 1, difficulty: "easy", category: "cybersecurity", points: 1, timeLimit: 30 },
+  { id: 77, question: "What is a 'Man-in-the-Middle' (MitM) attack?", options: ["A referee", "An attacker intercepting communication between two parties", "A busy server", "A network delay"], correct: 1, difficulty: "medium", category: "cybersecurity", points: 2, timeLimit: 45 },
+  { id: 78, question: "What is 'Brute Force'?", options: ["Strong lifting", "Trying every possible combination to guess a password", "A heavy server load", "A fast network"], correct: 1, difficulty: "medium", category: "cybersecurity", points: 2, timeLimit: 45 },
+  { id: 79, question: "Analytical: Why is 'Zero Trust' architecture becoming a standard in modern enterprises?", options: ["Because we don't like employees", "It assumes no one is trustworthy by default, even inside the network", "It saves on firewall costs", "It's easier to manage"], correct: 1, difficulty: "analytical", category: "cybersecurity", points: 4, timeLimit: 90 },
+  { id: 80, question: "What is a 'Zero-Day' vulnerability?", options: ["A bug found on day 0", "A vulnerability unknown to the software vendor", "A deleted bug", "A minor error"], correct: 1, difficulty: "hard", category: "cybersecurity", points: 3, timeLimit: 60 },
+
+  // CATEGORY: Management (10 questions)
+  { id: 81, question: "What is 'Agile' methodology?", options: ["Fast running", "An iterative approach to project management and software development", "A static plan", "A coding style"], correct: 1, difficulty: "easy", category: "management", points: 1, timeLimit: 30 },
+  { id: 82, question: "What is a 'Sprint' in Scrum?", options: ["A fast run", "A set period of time during which specific work is completed", "A break", "A quick meeting"], correct: 1, difficulty: "easy", category: "management", points: 1, timeLimit: 30 },
+  { id: 83, question: "What is 'Scope Creep'?", options: ["A scary bug", "Uncontrolled changes or continuous growth in a project’s scope", "Moving the office", "A lens error"], correct: 1, difficulty: "medium", category: "management", points: 2, timeLimit: 45 },
+  { id: 84, question: "What is a 'Burndown Chart'?", options: ["A fire map", "A graphical representation of work left to do vs time", "A list of errors", "A team photo"], correct: 1, difficulty: "medium", category: "management", points: 2, timeLimit: 45 },
+  { id: 85, question: "What is 'Waterfall' methodology?", options: ["A literal waterfall", "A linear and sequential approach to project management", "A fluid plan", "An Agile tool"], correct: 1, difficulty: "easy", category: "management", points: 1, timeLimit: 30 },
+  { id: 86, question: "What is a 'Stakeholder'?", options: ["A person holding a stake", "Anyone with an interest in the project", "A meat eater", "An investor only"], correct: 1, difficulty: "easy", category: "management", points: 1, timeLimit: 30 },
+  { id: 87, question: "What is 'Kanban'?", options: ["A martial art", "A visual system for managing work as it moves through a process", "A Japanese car", "A type of meeting"], correct: 1, difficulty: "easy", category: "management", points: 1, timeLimit: 30 },
+  { id: 88, question: "What is a 'MVP' (Minimum Viable Product)?", options: ["Most Valuable Player", "A version of a product with just enough features to be usable", "A beta version", "A prototype"], correct: 1, difficulty: "medium", category: "management", points: 2, timeLimit: 45 },
+  { id: 89, question: "Analytical: How do you handle a conflict between a tight deadline and a quality requirement?", options: ["Work overtime", "Negotiate scope or resources while maintaining quality", "Ignore quality", "Delay the project without telling"], correct: 1, difficulty: "analytical", category: "management", points: 4, timeLimit: 90 },
+  { id: 90, question: "What is 'Risk Management'?", options: ["Avoiding all risks", "Identifying, evaluating, and prioritizing risks", "Hiring insurance", "Ignoring problems"], correct: 1, difficulty: "medium", category: "management", points: 2, timeLimit: 45 },
+
+  // CATEGORY: Soft Skills (10 questions)
+  { id: 91, question: "What is 'Active Listening'?", options: ["Listening while running", "Fully concentrating and responding to the speaker", "Hearing voices", "Recording a meeting"], correct: 1, difficulty: "easy", category: "softskills", points: 1, timeLimit: 30 },
+  { id: 92, question: "What is 'Empathy' in the workplace?", options: ["Feeling sorry for others", "Understanding and sharing the feelings of another", "Following orders", "Working fast"], correct: 1, difficulty: "easy", category: "softskills", points: 1, timeLimit: 30 },
+  { id: 93, question: "How do you handle constructive criticism?", options: ["Get angry", "Listen, reflect, and use it to improve", "Ignore it", "Defend yourself immediately"], correct: 1, difficulty: "easy", category: "softskills", points: 1, timeLimit: 30 },
+  { id: 94, question: "What is 'Conflict Resolution'?", options: ["Winning an argument", "Finding a peaceful solution to a disagreement", "Deleting the problem", "Quitting the job"], correct: 1, difficulty: "medium", category: "softskills", points: 2, timeLimit: 45 },
+  { id: 95, question: "What is 'Time Management'?", options: ["Stopping the clock", "Planning and exercising conscious control over time spent", "Working 24/7", "Being late"], correct: 1, difficulty: "easy", category: "softskills", points: 1, timeLimit: 30 },
+  { id: 96, question: "What is 'Emotional Intelligence' (EQ)?", options: ["Being smart with math", "The ability to manage your own and others' emotions", "Being very emotional", "A high IQ score"], correct: 1, difficulty: "medium", category: "softskills", points: 2, timeLimit: 45 },
+  { id: 97, question: "Why is 'Collaboration' important?", options: ["To make friends", "To achieve a common goal more effectively", "To share the blame", "To work less"], correct: 1, difficulty: "easy", category: "softskills", points: 1, timeLimit: 30 },
+  { id: 98, question: "What is 'Critical Thinking'?", options: ["Thinking about critical things", "Analyzing facts to form a judgment", "Complaining about everything", "Thinking fast"], correct: 1, difficulty: "medium", category: "softskills", points: 2, timeLimit: 45 },
+  { id: 99, question: "Analytical: How would you prioritize tasks when everything is 'urgent'?", options: ["Do the easiest first", "Evaluate impact vs effort and negotiate priorities", "Do the hardest first", "Wait for instructions"], correct: 1, difficulty: "analytical", category: "softskills", points: 4, timeLimit: 90 },
+  { id: 100, question: "What is 'Adaptability'?", options: ["Changing your mind", "Adjusting to new conditions", "Following a strict plan", "A hardware connector"], correct: 1, difficulty: "medium", category: "softskills", points: 2, timeLimit: 45 },
+
+  // CATEGORY: Frontend (extra 15)
+  { id: 101, question: "What is the purpose of React.memo?", options: ["To memorize data", "To prevent unnecessary re-renders of functional components", "To cache API calls", "To create memos"], correct: 1, difficulty: "medium", category: "frontend", points: 2, timeLimit: 45 },
+  { id: 102, question: "What does 'tree shaking' mean in JavaScript bundlers?", options: ["Removing dead code from bundles", "Shaking the DOM tree", "A CSS animation", "Sorting component trees"], correct: 0, difficulty: "medium", category: "frontend", points: 2, timeLimit: 45 },
+  { id: 103, question: "What is a CSS custom property (variable)?", options: ["A JavaScript variable in CSS", "A reusable value defined with -- prefix", "A browser plugin", "A SCSS feature only"], correct: 1, difficulty: "easy", category: "frontend", points: 1, timeLimit: 30 },
+  { id: 104, question: "What is the difference between == and === in JavaScript?", options: ["No difference", "=== checks type and value, == only checks value", "== is faster", "=== is for objects only"], correct: 1, difficulty: "easy", category: "frontend", points: 1, timeLimit: 30 },
+  { id: 105, question: "What is 'code splitting' in React?", options: ["Splitting code into multiple files manually", "Lazy-loading parts of the app to reduce initial bundle size", "Breaking components into smaller ones", "Separating CSS from JS"], correct: 1, difficulty: "medium", category: "frontend", points: 2, timeLimit: 45 },
+  { id: 106, question: "What is the purpose of the 'key' prop in React lists?", options: ["Styling list items", "Helping React identify which items changed", "Setting unique IDs on DOM elements", "Required by HTML spec"], correct: 1, difficulty: "easy", category: "frontend", points: 1, timeLimit: 30 },
+  { id: 107, question: "What is a Promise in JavaScript?", options: ["A guarantee from a developer", "An object representing eventual completion or failure of async work", "A function that returns true", "A type of callback"], correct: 1, difficulty: "easy", category: "frontend", points: 1, timeLimit: 30 },
+  { id: 108, question: "What does the 'async/await' syntax do?", options: ["Makes code run faster", "Allows writing asynchronous code in a synchronous style", "Prevents all errors", "Replaces callbacks entirely"], correct: 1, difficulty: "easy", category: "frontend", points: 1, timeLimit: 30 },
+  { id: 109, question: "What is the CSS box model?", options: ["A 3D model in CSS", "Content, padding, border, and margin around an element", "A grid layout system", "A flexbox concept"], correct: 1, difficulty: "easy", category: "frontend", points: 1, timeLimit: 30 },
+  { id: 110, question: "What is 'prop drilling' in React?", options: ["Drilling holes in props", "Passing props through many nested components", "A performance optimization", "A testing technique"], correct: 1, difficulty: "medium", category: "frontend", points: 2, timeLimit: 45 },
+  { id: 111, question: "What is webpack?", options: ["A web server", "A module bundler for JavaScript applications", "A CSS framework", "A testing library"], correct: 1, difficulty: "medium", category: "frontend", points: 2, timeLimit: 45 },
+  { id: 112, question: "What is the difference between null and undefined in JS?", options: ["They are the same", "null is intentional absence, undefined means not assigned", "undefined is for objects only", "null is a bug"], correct: 1, difficulty: "medium", category: "frontend", points: 2, timeLimit: 45 },
+  { id: 113, question: "What is 'lazy loading' in web development?", options: ["Loading pages slowly", "Deferring loading of non-critical resources", "A browser bug", "Loading without cache"], correct: 1, difficulty: "medium", category: "frontend", points: 2, timeLimit: 45 },
+  { id: 114, question: "What is the purpose of useCallback hook in React?", options: ["To call APIs", "To memoize functions to prevent recreation on every render", "To handle callbacks in forms", "To replace useEffect"], correct: 1, difficulty: "hard", category: "frontend", points: 3, timeLimit: 60 },
+  { id: 115, question: "Analytical: How would you optimize a React app with 50+ components rendering slowly?", options: ["Rewrite in Angular", "Profile with DevTools, memoize, code split, and virtualize long lists", "Add more RAM", "Reduce components to 10"], correct: 1, difficulty: "analytical", category: "frontend", points: 4, timeLimit: 90 },
+
+  // CATEGORY: Backend (extra 15)
+  { id: 116, question: "What is REST?", options: ["A sleep protocol", "An architectural style for distributed hypermedia systems", "A database query language", "A JavaScript framework"], correct: 1, difficulty: "easy", category: "backend", points: 1, timeLimit: 30 },
+  { id: 117, question: "What HTTP status code means 'Not Found'?", options: ["200", "301", "404", "500"], correct: 2, difficulty: "easy", category: "backend", points: 1, timeLimit: 30 },
+  { id: 118, question: "What is rate limiting in APIs?", options: ["Limiting the speed of the server", "Restricting the number of requests a client can make", "Limiting database size", "A firewall rule"], correct: 1, difficulty: "easy", category: "backend", points: 1, timeLimit: 30 },
+  { id: 119, question: "What is a webhook?", options: ["A fishing hook for web data", "An HTTP callback triggered when an event occurs", "A web scraper", "An API key"], correct: 1, difficulty: "medium", category: "backend", points: 2, timeLimit: 45 },
+  { id: 120, question: "What is idempotency in HTTP methods?", options: ["A property where identical requests produce the same result", "A method for encrypting requests", "A REST constraint", "An HTTP error type"], correct: 0, difficulty: "medium", category: "backend", points: 2, timeLimit: 45 },
+  { id: 121, question: "What is the purpose of an ORM?", options: ["Optimizing RAM Memory", "Mapping objects to database tables", "A type of API", "A security layer"], correct: 1, difficulty: "medium", category: "backend", points: 2, timeLimit: 45 },
+  { id: 122, question: "What is a message queue?", options: ["A queue at the post office", "A system for async inter-service communication", "A database table", "A list of API endpoints"], correct: 1, difficulty: "medium", category: "backend", points: 2, timeLimit: 45 },
+  { id: 123, question: "What does HTTP 429 status code mean?", options: ["Unauthorized", "Too Many Requests", "Not Found", "Server Error"], correct: 1, difficulty: "easy", category: "backend", points: 1, timeLimit: 30 },
+  { id: 124, question: "What is API versioning?", options: ["Tracking API bugs", "Managing multiple versions of an API simultaneously", "Updating the API", "A security practice"], correct: 1, difficulty: "medium", category: "backend", points: 2, timeLimit: 45 },
+  { id: 125, question: "What is a load balancer?", options: ["A weight scale", "A system that distributes incoming traffic across multiple servers", "A database optimizer", "A network switch"], correct: 1, difficulty: "easy", category: "backend", points: 1, timeLimit: 30 },
+  { id: 126, question: "What is gRPC?", options: ["A Google search API", "A high-performance RPC framework using Protocol Buffers", "A REST alternative from GitHub", "A caching layer"], correct: 1, difficulty: "hard", category: "backend", points: 3, timeLimit: 60 },
+  { id: 127, question: "What is eventual consistency?", options: ["A bug in distributed systems", "A model where data will become consistent over time", "An immediate sync guarantee", "A database constraint"], correct: 1, difficulty: "hard", category: "backend", points: 3, timeLimit: 60 },
+  { id: 128, question: "What is the difference between synchronous and asynchronous programming?", options: ["Sync waits for completion, async does not block", "Async is slower than sync", "They are the same in Node.js", "Sync is for databases only"], correct: 0, difficulty: "medium", category: "backend", points: 2, timeLimit: 45 },
+  { id: 129, question: "What is connection pooling?", options: ["A swimming pool for servers", "Reusing database connections to improve performance", "A caching strategy", "A load balancing technique"], correct: 1, difficulty: "hard", category: "backend", points: 3, timeLimit: 60 },
+  { id: 130, question: "Analytical: Design a rate-limiting strategy for a public API with 1M users.", options: ["Block everyone", "Use token bucket algorithm with Redis and IP-based limits with user-tier overrides", "Allow unlimited access", "Use a simple counter in memory"], correct: 1, difficulty: "analytical", category: "backend", points: 4, timeLimit: 90 },
+
+  // CATEGORY: Database (extra 15)
+  { id: 131, question: "What is a JOIN in SQL?", options: ["Combining two tables based on a related column", "Adding rows to a table", "A type of index", "A database backup"], correct: 0, difficulty: "easy", category: "database", points: 1, timeLimit: 30 },
+  { id: 132, question: "What is the difference between INNER JOIN and LEFT JOIN?", options: ["INNER returns all rows, LEFT returns matching only", "INNER returns matching rows, LEFT returns all from left + matching from right", "They are the same", "LEFT JOIN is faster"], correct: 1, difficulty: "medium", category: "database", points: 2, timeLimit: 45 },
+  { id: 133, question: "What is a stored procedure?", options: ["A procedure stored in a file", "A precompiled SQL code block stored in the database", "A backup script", "A cron job"], correct: 1, difficulty: "medium", category: "database", points: 2, timeLimit: 45 },
+  { id: 134, question: "What is the difference between DELETE and TRUNCATE?", options: ["No difference", "DELETE removes specific rows, TRUNCATE removes all rows faster", "TRUNCATE is slower", "DELETE removes the table"], correct: 1, difficulty: "medium", category: "database", points: 2, timeLimit: 45 },
+  { id: 135, question: "What is a composite key?", options: ["A key made of multiple columns", "A key with special characters", "A foreign key combination", "A key used in NoSQL"], correct: 0, difficulty: "medium", category: "database", points: 2, timeLimit: 45 },
+  { id: 136, question: "What is 'database replication'?", options: ["Copying a database schema", "Maintaining copies of a database on multiple servers", "Backing up data to a file", "Mirroring the UI"], correct: 1, difficulty: "medium", category: "database", points: 2, timeLimit: 45 },
+  { id: 137, question: "What is a trigger in SQL?", options: ["A button in the UI", "A procedure that runs automatically in response to a database event", "A type of index", "An alarm for slow queries"], correct: 1, difficulty: "hard", category: "database", points: 3, timeLimit: 60 },
+  { id: 138, question: "What is the purpose of EXPLAIN in SQL?", options: ["To explain the table schema", "To show how the database will execute a query", "To add comments to a query", "To describe column types"], correct: 1, difficulty: "medium", category: "database", points: 2, timeLimit: 45 },
+  { id: 139, question: "What is a cursor in SQL?", options: ["A mouse pointer in the DB GUI", "A database object used to traverse query results row by row", "A type of join", "A temporary table"], correct: 1, difficulty: "hard", category: "database", points: 3, timeLimit: 60 },
+  { id: 140, question: "What is data denormalization?", options: ["Deleting data", "Introducing redundancy to improve read performance", "Removing indexes", "A data cleaning step"], correct: 1, difficulty: "hard", category: "database", points: 3, timeLimit: 60 },
+  { id: 141, question: "What is an ER diagram?", options: ["An error report diagram", "Entity-Relationship diagram showing database structure", "A flowchart", "An API map"], correct: 1, difficulty: "easy", category: "database", points: 1, timeLimit: 30 },
+  { id: 142, question: "What does HAVING clause do in SQL?", options: ["It filters rows before grouping", "It filters groups after a GROUP BY", "It replaces WHERE", "It sorts results"], correct: 1, difficulty: "medium", category: "database", points: 2, timeLimit: 45 },
+  { id: 143, question: "What is a full-text search?", options: ["Searching the entire database", "A search technique that looks through all words in text fields", "A wildcard query", "A JOIN operation"], correct: 1, difficulty: "easy", category: "database", points: 1, timeLimit: 30 },
+  { id: 144, question: "What is optimistic locking?", options: ["Locking the database optimistically", "Assuming no conflict occurs and checking only at commit time", "A type of pessimistic control", "An index strategy"], correct: 1, difficulty: "hard", category: "database", points: 3, timeLimit: 60 },
+  { id: 145, question: "Analytical: When would you choose a time-series database over a relational one?", options: ["For storing user data", "For high-frequency timestamped data like IoT metrics or stock prices", "For any analytics", "When SQL is too hard"], correct: 1, difficulty: "analytical", category: "database", points: 4, timeLimit: 90 },
+
+  // CATEGORY: DevOps (extra 15)
+  { id: 146, question: "What is a Dockerfile?", options: ["A document about Docker", "A script with instructions to build a Docker image", "A Docker log file", "A container registry"], correct: 1, difficulty: "easy", category: "devops", points: 1, timeLimit: 30 },
+  { id: 147, question: "What is the difference between a Docker image and a container?", options: ["They are the same", "Image is a blueprint, container is a running instance of an image", "Container is stored, image runs", "Images are smaller"], correct: 1, difficulty: "easy", category: "devops", points: 1, timeLimit: 30 },
+  { id: 148, question: "What is Helm in Kubernetes?", options: ["A safety helmet for devs", "A package manager for Kubernetes", "A monitoring tool", "A Kubernetes plugin"], correct: 1, difficulty: "medium", category: "devops", points: 2, timeLimit: 45 },
+  { id: 149, question: "What is a Kubernetes Pod?", options: ["A group of developers", "The smallest deployable unit in Kubernetes containing one or more containers", "A type of service", "A storage volume"], correct: 1, difficulty: "easy", category: "devops", points: 1, timeLimit: 30 },
+  { id: 150, question: "What is Terraform?", options: ["A game", "An IaC tool for provisioning cloud infrastructure", "A container runtime", "A CI/CD tool"], correct: 1, difficulty: "medium", category: "devops", points: 2, timeLimit: 45 },
+  { id: 151, question: "What is a CI pipeline?", options: ["An oil pipeline", "An automated sequence of build, test, and integration steps", "A Kubernetes resource", "A deployment script"], correct: 1, difficulty: "easy", category: "devops", points: 1, timeLimit: 30 },
+  { id: 152, question: "What is the purpose of Prometheus in DevOps?", options: ["A Greek god", "A monitoring and alerting toolkit", "A container registry", "A log aggregator"], correct: 1, difficulty: "medium", category: "devops", points: 2, timeLimit: 45 },
+  { id: 153, question: "What is Grafana used for?", options: ["Creating databases", "Visualizing metrics and logs from various data sources", "Deploying containers", "Writing Helm charts"], correct: 1, difficulty: "medium", category: "devops", points: 2, timeLimit: 45 },
+  { id: 154, question: "What is an Ansible playbook?", options: ["A sports playbook", "A YAML file defining automation tasks for Ansible", "A Kubernetes manifest", "A Docker Compose file"], correct: 1, difficulty: "medium", category: "devops", points: 2, timeLimit: 45 },
+  { id: 155, question: "What is the difference between horizontal and vertical scaling?", options: ["Horizontal adds more servers, vertical adds more power to one server", "Vertical adds servers, horizontal adds power", "They are the same", "Horizontal is cheaper always"], correct: 0, difficulty: "medium", category: "devops", points: 2, timeLimit: 45 },
+  { id: 156, question: "What is a Kubernetes Deployment?", options: ["Deploying code to a server", "A K8s resource that manages Pod replicas and rollout strategies", "A CI/CD step", "A Helm chart"], correct: 1, difficulty: "medium", category: "devops", points: 2, timeLimit: 45 },
+  { id: 157, question: "What is container orchestration?", options: ["Playing music in containers", "Automating deployment, scaling, and management of containers", "A Docker command", "A networking concept"], correct: 1, difficulty: "easy", category: "devops", points: 1, timeLimit: 30 },
+  { id: 158, question: "What is a rolling update in Kubernetes?", options: ["Rolling back code", "Gradually replacing old pod instances with new ones with zero downtime", "A batch job", "A network update"], correct: 1, difficulty: "hard", category: "devops", points: 3, timeLimit: 60 },
+  { id: 159, question: "What is secrets management in DevOps?", options: ["Keeping team secrets", "Securely storing and accessing credentials and API keys", "Encrypting logs", "A Docker feature"], correct: 1, difficulty: "hard", category: "devops", points: 3, timeLimit: 60 },
+  { id: 160, question: "Analytical: How would you design a zero-downtime deployment pipeline for a critical production service?", options: ["Deploy during off-hours", "Use blue-green deployments with automated health checks and instant rollback capability", "Stop the service then deploy", "Use a single server"], correct: 1, difficulty: "analytical", category: "devops", points: 4, timeLimit: 90 },
+
+  // CATEGORY: Mobile (extra 15)
+  { id: 161, question: "What is the purpose of AsyncStorage in React Native?", options: ["Asynchronous file storage", "A persistent, unencrypted key-value store for React Native", "A Redux replacement", "A cache manager"], correct: 1, difficulty: "easy", category: "mobile", points: 1, timeLimit: 30 },
+  { id: 162, question: "What is a FlatList in React Native?", options: ["A flat array", "A performant component for rendering large scrollable lists", "A UI theme", "A layout component"], correct: 1, difficulty: "easy", category: "mobile", points: 1, timeLimit: 30 },
+  { id: 163, question: "What is the difference between React Native and Expo?", options: ["Expo is a paid service", "Expo is a framework built on top of React Native with extra tools", "They are the same", "React Native uses Dart"], correct: 1, difficulty: "medium", category: "mobile", points: 2, timeLimit: 45 },
+  { id: 164, question: "What is 'Over The Air' (OTA) update in mobile?", options: ["WiFi only updates", "Pushing JS bundle updates to users without App Store review", "A 5G feature", "A native module update"], correct: 1, difficulty: "medium", category: "mobile", points: 2, timeLimit: 45 },
+  { id: 165, question: "What is the purpose of the Platform API in React Native?", options: ["Managing platforms", "Detecting the OS (iOS/Android) to write platform-specific code", "A UI library", "A navigation tool"], correct: 1, difficulty: "easy", category: "mobile", points: 1, timeLimit: 30 },
+  { id: 166, question: "What is a native module in React Native?", options: ["A JavaScript module", "Code written in Swift/Kotlin bridged to JavaScript", "A component library", "A Redux module"], correct: 1, difficulty: "hard", category: "mobile", points: 3, timeLimit: 60 },
+  { id: 167, question: "What is gesture handling in mobile apps?", options: ["Touching the screen", "Recognizing and responding to user touch gestures like swipe and pinch", "A keyboard shortcut", "An accessibility feature"], correct: 1, difficulty: "medium", category: "mobile", points: 2, timeLimit: 45 },
+  { id: 168, question: "What is a splash screen?", options: ["A water animation", "The initial loading screen shown while an app starts up", "An error screen", "A marketing screen"], correct: 1, difficulty: "easy", category: "mobile", points: 1, timeLimit: 30 },
+  { id: 169, question: "What is push notification in mobile?", options: ["Pushing the phone", "Messages sent from a server to a user's device", "An in-app alert only", "A local notification"], correct: 1, difficulty: "easy", category: "mobile", points: 1, timeLimit: 30 },
+  { id: 170, question: "What is the purpose of the metro bundler in React Native?", options: ["A city metro system", "The JavaScript bundler that compiles RN code during development", "A testing tool", "A native build tool"], correct: 1, difficulty: "medium", category: "mobile", points: 2, timeLimit: 45 },
+  { id: 171, question: "What is a navigation stack in mobile?", options: ["A stack of phones", "A navigation pattern where screens are pushed and popped like a stack", "A Redux store", "An animation library"], correct: 1, difficulty: "medium", category: "mobile", points: 2, timeLimit: 45 },
+  { id: 172, question: "What is the difference between portrait and landscape mode handling?", options: ["Screen colors", "Adjusting UI layout based on device orientation", "A camera feature", "An accessibility setting"], correct: 1, difficulty: "easy", category: "mobile", points: 1, timeLimit: 30 },
+  { id: 173, question: "What is background task execution in mobile?", options: ["Running tasks while the app is closed", "Running tasks with the screen off only", "A foreground service", "A cron job"], correct: 0, difficulty: "medium", category: "mobile", points: 2, timeLimit: 45 },
+  { id: 174, question: "What is biometric authentication in mobile?", options: ["A blood test", "Using fingerprint or face recognition to authenticate users", "A password manager", "A PIN code"], correct: 1, difficulty: "hard", category: "mobile", points: 3, timeLimit: 60 },
+  { id: 175, question: "Analytical: How would you optimize battery usage in a location-tracking mobile app?", options: ["Use GPS continuously", "Use geofencing, batch location updates, and adaptive polling intervals", "Turn off the app", "Use WiFi only"], correct: 1, difficulty: "analytical", category: "mobile", points: 4, timeLimit: 90 },
+
+  // CATEGORY: Fullstack (extra 15)
+  { id: 176, question: "What is CORS and why does it exist?", options: ["A CSS framework", "A browser security mechanism preventing unauthorized cross-origin requests", "A server-side error", "A caching strategy"], correct: 1, difficulty: "easy", category: "fullstack", points: 1, timeLimit: 30 },
+  { id: 177, question: "What is the difference between cookies and localStorage?", options: ["No difference", "Cookies are sent with every HTTP request, localStorage stays in browser only", "localStorage is more secure", "Cookies hold more data"], correct: 1, difficulty: "medium", category: "fullstack", points: 2, timeLimit: 45 },
+  { id: 178, question: "What is OAuth 2.0?", options: ["A database protocol", "An authorization framework allowing third-party access without sharing credentials", "A type of JWT", "A REST standard"], correct: 1, difficulty: "medium", category: "fullstack", points: 2, timeLimit: 45 },
+  { id: 179, question: "What is a CDN?", options: ["A type of database", "A Content Delivery Network that serves assets from geographically closer servers", "A CSS naming system", "A cloud provider"], correct: 1, difficulty: "easy", category: "fullstack", points: 1, timeLimit: 30 },
+  { id: 180, question: "What is WebSocket?", options: ["A type of network cable", "A protocol for full-duplex, real-time communication between client and server", "A REST endpoint", "A browser storage API"], correct: 1, difficulty: "medium", category: "fullstack", points: 2, timeLimit: 45 },
+  { id: 181, question: "What is the purpose of environment variables?", options: ["To set screen brightness", "To store configuration values outside of the codebase securely", "A type of CSS variable", "A JavaScript global"], correct: 1, difficulty: "easy", category: "fullstack", points: 1, timeLimit: 30 },
+  { id: 182, question: "What is pagination in web applications?", options: ["Adding page numbers to documents", "Splitting large datasets into smaller pages to improve performance", "A print feature", "A routing technique"], correct: 1, difficulty: "easy", category: "fullstack", points: 1, timeLimit: 30 },
+  { id: 183, question: "What is the purpose of a reverse proxy?", options: ["Going backwards on the web", "Sitting in front of servers to distribute requests, cache, and handle SSL", "A database proxy", "A frontend tool"], correct: 1, difficulty: "medium", category: "fullstack", points: 2, timeLimit: 45 },
+  { id: 184, question: "What is 'optimistic UI'?", options: ["A happy UI design", "Updating the UI immediately before the server confirms the operation", "A loading state technique", "A UX pattern for forms"], correct: 1, difficulty: "medium", category: "fullstack", points: 2, timeLimit: 45 },
+  { id: 185, question: "What is a BFF (Backend for Frontend)?", options: ["A best friend in tech", "A dedicated backend layer tailored for a specific frontend's needs", "A reverse proxy", "A microservice pattern"], correct: 1, difficulty: "hard", category: "fullstack", points: 3, timeLimit: 60 },
+  { id: 186, question: "What is 'infinite scrolling'?", options: ["A CSS overflow trick", "Loading more content as the user scrolls to the bottom", "An animation loop", "A pagination variant with no pages"], correct: 1, difficulty: "easy", category: "fullstack", points: 1, timeLimit: 30 },
+  { id: 187, question: "What is a monorepo?", options: ["A single database", "A version control strategy where multiple projects share one repository", "A single-page app", "A Docker setup"], correct: 1, difficulty: "medium", category: "fullstack", points: 2, timeLimit: 45 },
+  { id: 188, question: "What is the difference between authentication and authorization?", options: ["They are the same", "Auth verifies identity, authorization determines what a user can access", "Authorization comes first", "Authentication is optional"], correct: 1, difficulty: "medium", category: "fullstack", points: 2, timeLimit: 45 },
+  { id: 189, question: "What is a service worker?", options: ["A backend developer", "A browser script enabling offline support, caching, and push notifications", "A web crawler", "A load balancer"], correct: 1, difficulty: "hard", category: "fullstack", points: 3, timeLimit: 60 },
+  { id: 190, question: "Analytical: How would you architect a real-time chat feature for a fullstack app with 100k concurrent users?", options: ["Use REST polling", "Use WebSockets with horizontal scaling via Redis Pub/Sub and message queues", "Use HTTP only", "Use email notifications"], correct: 1, difficulty: "analytical", category: "fullstack", points: 4, timeLimit: 90 },
+
+  // CATEGORY: Data Science (extra 15)
+  { id: 191, question: "What is 'data wrangling'?", options: ["Wrestling with servers", "Cleaning and transforming raw data into a usable format", "Visualizing data", "Training a model"], correct: 1, difficulty: "easy", category: "datascience", points: 1, timeLimit: 30 },
+  { id: 192, question: "What is a neural network?", options: ["A computer network", "A computational model inspired by biological brain neurons", "A type of database", "A Python library"], correct: 1, difficulty: "easy", category: "datascience", points: 1, timeLimit: 30 },
+  { id: 193, question: "What is the bias-variance tradeoff?", options: ["A hiring tradeoff", "Balancing model complexity to avoid underfitting and overfitting", "A statistical concept about error", "A GPU limitation"], correct: 1, difficulty: "hard", category: "datascience", points: 3, timeLimit: 60 },
+  { id: 194, question: "What is cross-validation?", options: ["Validating across teams", "A technique to evaluate model performance on multiple data subsets", "A data cleaning step", "A normalization method"], correct: 1, difficulty: "medium", category: "datascience", points: 2, timeLimit: 45 },
+  { id: 195, question: "What is 'data normalization'?", options: ["Making data normal", "Scaling features to a standard range to improve model training", "Removing duplicates", "A SQL operation"], correct: 1, difficulty: "medium", category: "datascience", points: 2, timeLimit: 45 },
+  { id: 196, question: "What is a decision tree?", options: ["A tree in the park", "A flowchart-like model that makes decisions based on feature values", "A type of neural network", "A sorting algorithm"], correct: 1, difficulty: "easy", category: "datascience", points: 1, timeLimit: 30 },
+  { id: 197, question: "What is the ROC curve?", options: ["A road curve", "A graph showing the tradeoff between true positive and false positive rates", "A model performance line", "A regression result"], correct: 1, difficulty: "hard", category: "datascience", points: 3, timeLimit: 60 },
+  { id: 198, question: "What is 'transfer learning'?", options: ["Moving data between servers", "Using a pre-trained model as starting point for a new task", "Learning from multiple sources", "A GPU transfer protocol"], correct: 1, difficulty: "medium", category: "datascience", points: 2, timeLimit: 45 },
+  { id: 199, question: "What is a hyperparameter?", options: ["An advanced parameter", "A configuration value set before model training that controls learning", "A result of training", "A dataset feature"], correct: 1, difficulty: "medium", category: "datascience", points: 2, timeLimit: 45 },
+  { id: 200, question: "What is 'natural language processing' (NLP)?", options: ["Speaking naturally", "AI field focused on enabling computers to understand human language", "A translation API", "A speech recognition system"], correct: 1, difficulty: "easy", category: "datascience", points: 1, timeLimit: 30 },
+  { id: 201, question: "What is a recommendation system?", options: ["A friend's suggestion", "An algorithm that predicts what a user might like based on past behavior", "A search engine", "A ranking algorithm"], correct: 1, difficulty: "medium", category: "datascience", points: 2, timeLimit: 45 },
+  { id: 202, question: "What does 'precision' mean in ML evaluation?", options: ["Being very careful", "The ratio of true positives to all predicted positives", "Accuracy of all predictions", "The model's confidence"], correct: 1, difficulty: "medium", category: "datascience", points: 2, timeLimit: 45 },
+  { id: 203, question: "What is clustering in unsupervised learning?", options: ["Grouping servers", "Grouping similar data points together without predefined labels", "A classification task", "A sorting algorithm"], correct: 1, difficulty: "easy", category: "datascience", points: 1, timeLimit: 30 },
+  { id: 204, question: "What is gradient descent?", options: ["Going down a hill", "An optimization algorithm that iteratively minimizes a loss function", "A type of regression", "A normalization technique"], correct: 1, difficulty: "hard", category: "datascience", points: 3, timeLimit: 60 },
+  { id: 205, question: "Analytical: How would you handle a heavily imbalanced dataset (1% positive, 99% negative)?", options: ["Delete the majority class", "Use SMOTE, class weights, or threshold tuning with precision-recall focus", "Use accuracy as metric", "Collect more data only"], correct: 1, difficulty: "analytical", category: "datascience", points: 4, timeLimit: 90 },
+
+  // CATEGORY: Cybersecurity (extra 15)
+  { id: 206, question: "What is a firewall?", options: ["A wall made of fire", "A network security system that monitors and controls incoming/outgoing traffic", "An antivirus", "A VPN"], correct: 1, difficulty: "easy", category: "cybersecurity", points: 1, timeLimit: 30 },
+  { id: 207, question: "What is social engineering in cybersecurity?", options: ["Building social networks", "Manipulating people into divulging confidential information", "A hacking tool", "A network attack"], correct: 1, difficulty: "easy", category: "cybersecurity", points: 1, timeLimit: 30 },
+  { id: 208, question: "What is a DDoS attack?", options: ["A data download service", "Overwhelming a server with traffic to make it unavailable", "A type of malware", "A phishing variant"], correct: 1, difficulty: "medium", category: "cybersecurity", points: 2, timeLimit: 45 },
+  { id: 209, question: "What is a VPN?", options: ["A virtual printer", "A service that encrypts traffic and masks your IP address", "A firewall type", "A type of proxy"], correct: 1, difficulty: "easy", category: "cybersecurity", points: 1, timeLimit: 30 },
+  { id: 210, question: "What is HTTPS?", options: ["HTTP with speed", "HTTP secured with TLS/SSL encryption", "A faster HTTP version", "A type of API"], correct: 1, difficulty: "easy", category: "cybersecurity", points: 1, timeLimit: 30 },
+  { id: 211, question: "What is a penetration test?", options: ["A pressure test", "Simulating a cyberattack to find vulnerabilities before attackers do", "A performance test", "A firewall test"], correct: 1, difficulty: "medium", category: "cybersecurity", points: 2, timeLimit: 45 },
+  { id: 212, question: "What is the principle of least privilege?", options: ["Giving everyone access", "Granting users only the minimum access needed for their role", "A legal principle", "A database concept"], correct: 1, difficulty: "medium", category: "cybersecurity", points: 2, timeLimit: 45 },
+  { id: 213, question: "What is a certificate authority (CA)?", options: ["A school authority", "A trusted entity that issues digital certificates for SSL/TLS", "A firewall service", "An encryption key"], correct: 1, difficulty: "medium", category: "cybersecurity", points: 2, timeLimit: 45 },
+  { id: 214, question: "What is CSRF (Cross-Site Request Forgery)?", options: ["A CSS vulnerability", "Tricking a user's browser into sending unauthorized requests to a site where they're logged in", "A type of XSS", "A server-side attack"], correct: 1, difficulty: "hard", category: "cybersecurity", points: 3, timeLimit: 60 },
+  { id: 215, question: "What is multi-factor authentication?", options: ["Logging in multiple times", "Requiring two or more verification factors to grant access", "A type of password", "A biometric system"], correct: 1, difficulty: "easy", category: "cybersecurity", points: 1, timeLimit: 30 },
+  { id: 216, question: "What is an intrusion detection system (IDS)?", options: ["A burglar alarm", "A system that monitors network traffic for suspicious activity", "A firewall type", "An antivirus tool"], correct: 1, difficulty: "medium", category: "cybersecurity", points: 2, timeLimit: 45 },
+  { id: 217, question: "What is asymmetric encryption?", options: ["Encryption that tilts", "Using a public key to encrypt and a private key to decrypt", "Encryption without keys", "A type of hashing"], correct: 1, difficulty: "hard", category: "cybersecurity", points: 3, timeLimit: 60 },
+  { id: 218, question: "What is a honeypot in cybersecurity?", options: ["A trap for bees", "A decoy system designed to lure and detect attackers", "A network monitor", "A backup system"], correct: 1, difficulty: "medium", category: "cybersecurity", points: 2, timeLimit: 45 },
+  { id: 219, question: "What is ransomware?", options: ["Expensive software", "Malware that encrypts files and demands payment for the decryption key", "A type of spam", "A DDoS tool"], correct: 1, difficulty: "medium", category: "cybersecurity", points: 2, timeLimit: 45 },
+  { id: 220, question: "Analytical: How would you secure a REST API exposed to the public internet?", options: ["Use HTTP only", "Use HTTPS, JWT auth, rate limiting, input validation, and OWASP guidelines", "Block all requests by default", "Use API keys only"], correct: 1, difficulty: "analytical", category: "cybersecurity", points: 4, timeLimit: 90 },
+
+  // CATEGORY: Management (extra 15)
+  { id: 221, question: "What is a 'Definition of Done' in Agile?", options: ["When the manager says done", "A shared understanding of what it means for a task to be complete", "Finishing all tasks", "A sprint review"], correct: 1, difficulty: "easy", category: "management", points: 1, timeLimit: 30 },
+  { id: 222, question: "What is a retrospective in Scrum?", options: ["Looking at the past", "A meeting after each sprint to reflect and improve the process", "A project postmortem", "A stakeholder review"], correct: 1, difficulty: "easy", category: "management", points: 1, timeLimit: 30 },
+  { id: 223, question: "What is velocity in Agile?", options: ["How fast the team runs", "The amount of work completed in a sprint, measured in story points", "Internet speed in the office", "A sprint metric"], correct: 1, difficulty: "medium", category: "management", points: 2, timeLimit: 45 },
+  { id: 224, question: "What is a user story?", options: ["A blog post from a user", "A short description of a feature from the end-user's perspective", "A bug report", "A design document"], correct: 1, difficulty: "easy", category: "management", points: 1, timeLimit: 30 },
+  { id: 225, question: "What is the role of a Scrum Master?", options: ["The team boss", "A servant leader who removes blockers and facilitates Scrum processes", "The project manager", "The tech lead"], correct: 1, difficulty: "medium", category: "management", points: 2, timeLimit: 45 },
+  { id: 226, question: "What is a product backlog?", options: ["A list of bugs", "A prioritized list of features and tasks for a product", "A sprint plan", "A project schedule"], correct: 1, difficulty: "easy", category: "management", points: 1, timeLimit: 30 },
+  { id: 227, question: "What is story point estimation?", options: ["A point system for user stories", "A relative measure of effort required to complete a user story", "A time estimate in hours", "A risk score"], correct: 1, difficulty: "medium", category: "management", points: 2, timeLimit: 45 },
+  { id: 228, question: "What is the difference between a project and a product?", options: ["No difference", "A project has a defined end, a product is an ongoing business asset", "Products cost more", "Projects are bigger"], correct: 1, difficulty: "medium", category: "management", points: 2, timeLimit: 45 },
+  { id: 229, question: "What is a RACI matrix?", options: ["A race tracking matrix", "A tool defining Responsible, Accountable, Consulted, Informed roles", "A risk chart", "A resource allocation tool"], correct: 1, difficulty: "medium", category: "management", points: 2, timeLimit: 45 },
+  { id: 230, question: "What is 'technical debt'?", options: ["Money owed for software", "The future cost of rework caused by choosing a quick solution now", "A budget overrun", "Unused code"], correct: 1, difficulty: "medium", category: "management", points: 2, timeLimit: 45 },
+  { id: 231, question: "What is a project charter?", options: ["A rental agreement", "A document formally authorizing a project and defining its objectives", "A sprint plan", "A risk register"], correct: 1, difficulty: "easy", category: "management", points: 1, timeLimit: 30 },
+  { id: 232, question: "What is a daily standup in Scrum?", options: ["An exercise session", "A brief daily meeting where team shares what they did, plan, and blockers", "A status report", "A team lunch"], correct: 1, difficulty: "easy", category: "management", points: 1, timeLimit: 30 },
+  { id: 233, question: "What is a critical path in project management?", options: ["The most important road", "The longest sequence of tasks that determines minimum project duration", "A risk path", "A fast-track method"], correct: 1, difficulty: "hard", category: "management", points: 3, timeLimit: 60 },
+  { id: 234, question: "What is OKR (Objectives and Key Results)?", options: ["A reporting framework", "A goal-setting framework to define and track objectives and outcomes", "A project methodology", "An Agile ceremony"], correct: 1, difficulty: "hard", category: "management", points: 3, timeLimit: 60 },
+  { id: 235, question: "Analytical: Your sprint is 80% done but a critical bug is found 2 days before demo. What do you do?", options: ["Ignore the bug", "Triage the bug, communicate transparently, and decide with the team whether to fix or defer", "Cancel the sprint", "Work all night without telling anyone"], correct: 1, difficulty: "analytical", category: "management", points: 4, timeLimit: 90 },
+
+  // CATEGORY: SoftSkills (extra 15)
+  { id: 236, question: "What is 'growth mindset'?", options: ["Growing physically", "Believing abilities can be developed through dedication and hard work", "Being ambitious", "A career strategy"], correct: 1, difficulty: "easy", category: "softskills", points: 1, timeLimit: 30 },
+  { id: 237, question: "What is professional integrity?", options: ["Being a professional", "Adhering to moral and ethical principles consistently in your work", "Having certifications", "Following all rules"], correct: 1, difficulty: "easy", category: "softskills", points: 1, timeLimit: 30 },
+  { id: 238, question: "What is 'constructive feedback'?", options: ["Feedback that builds buildings", "Specific, actionable feedback aimed at improvement rather than criticism", "Positive feedback only", "A performance review"], correct: 1, difficulty: "easy", category: "softskills", points: 1, timeLimit: 30 },
+  { id: 239, question: "What is the difference between assertiveness and aggression?", options: ["No difference", "Assertiveness respects others while expressing your needs; aggression does not", "Aggression is louder", "Assertiveness is passive"], correct: 1, difficulty: "medium", category: "softskills", points: 2, timeLimit: 45 },
+  { id: 240, question: "What is 'networking' in a professional context?", options: ["Setting up computer networks", "Building mutually beneficial professional relationships", "Using LinkedIn only", "Collecting business cards"], correct: 1, difficulty: "easy", category: "softskills", points: 1, timeLimit: 30 },
+  { id: 241, question: "What is 'imposter syndrome'?", options: ["A medical condition", "Feeling like a fraud despite evidence of success", "Pretending to be someone else", "A career obstacle only for juniors"], correct: 1, difficulty: "medium", category: "softskills", points: 2, timeLimit: 45 },
+  { id: 242, question: "What is 'situational leadership'?", options: ["Leadership in different countries", "Adapting your leadership style based on the team member's maturity and skill", "A military style", "Remote leadership"], correct: 1, difficulty: "medium", category: "softskills", points: 2, timeLimit: 45 },
+  { id: 243, question: "What is 'psychological safety' in a team?", options: ["A mental health benefit", "An environment where team members feel safe to speak up without fear", "A safety protocol", "A team-building activity"], correct: 1, difficulty: "medium", category: "softskills", points: 2, timeLimit: 45 },
+  { id: 244, question: "What is 'active feedback seeking'?", options: ["Asking for praise", "Proactively asking for input to continuously improve your work", "A 360 review", "An annual process"], correct: 1, difficulty: "easy", category: "softskills", points: 1, timeLimit: 30 },
+  { id: 245, question: "What is the 'Eisenhower Matrix'?", options: ["A military strategy", "A time management tool categorizing tasks by urgency and importance", "An Agile framework", "A project chart"], correct: 1, difficulty: "medium", category: "softskills", points: 2, timeLimit: 45 },
+  { id: 246, question: "What is 'nonviolent communication' (NVC)?", options: ["Being quiet", "A communication method focusing on feelings and needs without blame", "A conflict avoidance technique", "A legal term"], correct: 1, difficulty: "medium", category: "softskills", points: 2, timeLimit: 45 },
+  { id: 247, question: "What is 'decision fatigue'?", options: ["Being tired of deciding", "The deteriorating quality of decisions after making many choices", "A leadership problem", "A medical condition"], correct: 1, difficulty: "easy", category: "softskills", points: 1, timeLimit: 30 },
+  { id: 248, question: "What is 'cognitive bias' in decision making?", options: ["A smart decision", "A systematic error in thinking that affects judgments and decisions", "Being biased against cognition", "A psychology degree concept only"], correct: 1, difficulty: "hard", category: "softskills", points: 3, timeLimit: 60 },
+  { id: 249, question: "What is 'mentorship'?", options: ["A management role", "A relationship where an experienced person guides a less experienced one", "A training program", "A performance review"], correct: 1, difficulty: "easy", category: "softskills", points: 1, timeLimit: 30 },
+  { id: 250, question: "Analytical: A senior colleague consistently dismisses your ideas in meetings. How do you handle it professionally?", options: ["Quit the job", "Request a private conversation to understand their perspective and share yours constructively", "Complain to HR immediately", "Stay silent permanently"], correct: 1, difficulty: "analytical", category: "softskills", points: 4, timeLimit: 90 }
 ];
-
-// Function to seed quiz questions
-export const seedQuizQuestions = async () => {
-  try {
-    await QuizQuestion.deleteMany({});
-    await QuizQuestion.insertMany(quizQuestions);
-    console.log('Quiz questions seeded successfully');
-  } catch (error) {
-    console.error('Error seeding quiz questions:', error);
-  }
-};
-
-export { quizQuestions };
-export default quizQuestions;

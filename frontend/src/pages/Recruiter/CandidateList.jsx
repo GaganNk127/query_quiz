@@ -80,12 +80,15 @@ export default function CandidateList() {
     }
   }, [])
 
+  const userId = user?.id || user?._id;
+  const userRole = user?.role;
+
   useEffect(() => {
-    if (isAuthenticated && user?.role === 'recruiter') {
+    if (isAuthenticated && userRole === 'recruiter') {
       fetchCandidates()
       fetchRecruiterJobs()
     }
-  }, [fetchCandidates, fetchRecruiterJobs, isAuthenticated, user])
+  }, [fetchCandidates, fetchRecruiterJobs, isAuthenticated, userRole]);
 
   const handleFilterChange = (name, value) => {
     setFilters(prev => ({
@@ -527,6 +530,11 @@ export default function CandidateList() {
                         <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
                           <CheckCircle className="h-3 w-3 mr-1" />
                           Shortlisted
+                        </span>
+                      ) : candidate.appliedJobs && candidate.appliedJobs.length > 0 ? (
+                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200">
+                          <Briefcase className="h-3 w-3 mr-1" />
+                          Applied
                         </span>
                       ) : (
                         <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200">

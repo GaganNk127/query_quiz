@@ -9,7 +9,7 @@ export const generateQuiz = async (jobDescription = '', resumeText = '', role = 
     // Try to use database questions first
     const dbQuestions = await getQuestionsFromDatabase();
     if (dbQuestions.length > 0) {
-      quizQuestions = selectBalancedQuestionsFromDB(dbQuestions);
+      quizQuestions = selectBalancedQuestionsFromDB(dbQuestions, role);
     } else {
       // Fallback to synthetic data generation
       if (jobDescription && resumeText) {
@@ -44,19 +44,46 @@ const getQuestionsFromDatabase = async () => {
 };
 
 // Select balanced questions from database
-const selectBalancedQuestionsFromDB = (allQuestions) => {
-  const easy = allQuestions.filter(q => q.difficulty === 'easy');
-  const medium = allQuestions.filter(q => q.difficulty === 'medium');
-  const hard = allQuestions.filter(q => q.difficulty === 'hard');
-  const analytical = allQuestions.filter(q => q.difficulty === 'analytical');
+const selectBalancedQuestionsFromDB = (allQuestions, role = '') => {
+  let pool = allQuestions;
+
+  // Try to filter by category if role matches
+  if (role) {
+    const roleLower = role.toLowerCase();
+    const categorySpecificPool = allQuestions.filter(q => 
+      q.category && (
+        q.category.toLowerCase() === roleLower || 
+        roleLower.includes(q.category.toLowerCase())
+      )
+    );
+
+    // Only narrow down the pool if we actually found matching questions
+    if (categorySpecificPool.length > 0) {
+      pool = categorySpecificPool;
+    }
+  }
+
+  const easy = pool.filter(q => q.difficulty === 'easy');
+  const medium = pool.filter(q => q.difficulty === 'medium');
+  const hard = pool.filter(q => q.difficulty === 'hard');
+  const analytical = pool.filter(q => q.difficulty === 'analytical');
 
   // Select questions based on requirements: 3 easy + 4 medium + 2 hard + 1 analytical
-  const selectedQuestions = [
+  let selectedQuestions = [
     ...getRandomItems(easy, 3),
     ...getRandomItems(medium, 4),
     ...getRandomItems(hard, 2),
     ...getRandomItems(analytical, 1)
   ];
+
+  // If the filtered pool didn't have enough questions to fill 10 slots,
+  // pull from the general pool for the remaining count
+  if (selectedQuestions.length < 10) {
+    const selectedIds = new Set(selectedQuestions.map(q => q._id?.toString() || q.id));
+    const remainingCount = 10 - selectedQuestions.length;
+    const fallbackPool = allQuestions.filter(q => !selectedIds.has(q._id?.toString() || q.id));
+    selectedQuestions = [...selectedQuestions, ...getRandomItems(fallbackPool, remainingCount)];
+  }
 
   return selectedQuestions;
 };

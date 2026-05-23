@@ -13,6 +13,7 @@ import {
   Send,
   Target,
   Calendar,
+  CheckCircle,
 } from "lucide-react";
 
 import { useAuth } from "../../contexts/AuthContext";
@@ -43,8 +44,9 @@ export default function RecruiterDashboard() {
 
   const [loading, setLoading] = useState(true);
   const [showQuizAssign, setShowQuizAssign] = useState(false);
-  const [selectedCandidate, setSelectedCandidate] = useState("");
+  const [selectedCandidates, setSelectedCandidates] = useState([]);
   const [selectedJob, setSelectedJob] = useState("");
+  const [candidateSearch, setCandidateSearch] = useState("");
   const [assigningQuiz, setAssigningQuiz] = useState(false);
   const [error, setError] = useState(null);
 
@@ -55,28 +57,18 @@ export default function RecruiterDashboard() {
 
       const [
         dashboardResponse,
-        recentCandidatesRes,
-        recentJobsRes,
         allCandidatesRes,
         allJobsRes,
       ] = await Promise.all([
         axios.get("/api/recruiter/dashboard"),
-        axios.get("/api/candidates?limit=5"),
-        axios.get("/api/jobs/my-jobs?limit=5"),
         axios.get("/api/candidates"),
         axios.get("/api/jobs/my-jobs"),
       ]);
 
       const dashboardData = dashboardResponse.data.data || dashboardResponse.data;
       setStats(dashboardData.stats || {});
-
-      setRecentCandidates(
-        recentCandidatesRes.data.data?.candidates ||
-        recentCandidatesRes.data.candidates ||
-        []
-      );
-
-      setRecentJobs(recentJobsRes.data.jobs || []);
+      setRecentCandidates(dashboardData.recentCandidates || []);
+      setRecentJobs(dashboardData.recentJobs || []);
 
       setCandidates(
         allCandidatesRes.data.data?.candidates ||
@@ -94,25 +86,27 @@ export default function RecruiterDashboard() {
     }
   }, []);
 
+  const userId = user?.id || user?._id;
+
   useEffect(() => {
-    if (user?.id || user?._id) {
+    if (userId) {
       fetchDashboardData();
     }
-  }, [fetchDashboardData, user?.id, user?._id]);
+  }, [fetchDashboardData, userId]);
 
   const handleAssignQuiz = async () => {
-    if (!selectedCandidate || !selectedJob)
-      return toast.error("Please select both candidate & job");
+    if (selectedCandidates.length === 0 || !selectedJob)
+      return toast.error("Please select at least one candidate & a job");
 
     setAssigningQuiz(true);
     try {
       const res = await axios.post("/api/quiz/assign", {
-        candidateId: selectedCandidate,
+        candidateIds: selectedCandidates,
         jobId: selectedJob,
       });
 
       toast.success(res.data.message);
-      setSelectedCandidate("");
+      setSelectedCandidates([]);
       setSelectedJob("");
       setShowQuizAssign(false);
 
@@ -124,6 +118,17 @@ export default function RecruiterDashboard() {
       setAssigningQuiz(false);
     }
   };
+
+  const toggleCandidate = (id) => {
+    setSelectedCandidates(prev =>
+      prev.includes(id) ? prev.filter(i => i !== id) : [...prev, id]
+    );
+  };
+
+  const filteredCandidates = (candidates || []).filter(c =>
+    c.user?.name?.toLowerCase().includes(candidateSearch.toLowerCase()) ||
+    c.user?.email?.toLowerCase().includes(candidateSearch.toLowerCase())
+  );
 
   const card = "bg-white dark:bg-gray-900 shadow-md rounded-lg border border-gray-200 dark:border-gray-700 p-6";
 
@@ -232,41 +237,105 @@ export default function RecruiterDashboard() {
           </button>
 
           {showQuizAssign && (
-            <div className="p-4 bg-gray-100 dark:bg-gray-800 rounded-lg border">
+            <div className="p-4 bg-gray-50 dark:bg-gray-800 rounded-lg border space-y-4">
+              <div>
+                <label className="text-sm font-medium mb-2 block">
+                  Select Candidates ({selectedCandidates.length} selected)
+                </label>
+                
+                {/* Search in multi-select */}
+                <div className="relative mb-2">
+                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">
+                    <Target className="h-4 w-4" />
+                  </span>
+                  <input
+                    type="text"
+                    placeholder="Search candidates..."
+                    className="w-full pl-9 pr-3 py-2 text-sm rounded-md border dark:bg-gray-700 focus:ring-2 focus:ring-primary/20 outline-none"
+                    value={candidateSearch}
+                    onChange={(e) => setCandidateSearch(e.target.value)}
+                  />
+                </div>
 
-              <label className="text-sm">Select Candidate</label>
-              <select
-                className="w-full p-2 rounded-md bg-white dark:bg-gray-700 border mb-3"
-                value={selectedCandidate}
-                onChange={(e) => setSelectedCandidate(e.target.value)}
-              >
-                <option value="">Choose...</option>
-                {candidates.map((c) => (
-                  <option key={c._id} value={c._id}>
-                    {c.user?.name || "No name"} — ATS {c.atsScore ?? 0}
-                  </option>
-                ))}
-              </select>
+                <div className="max-h-48 overflow-y-auto border rounded-md bg-white dark:bg-gray-900 shadow-inner">
+                  {filteredCandidates.length === 0 ? (
+                    <div className="p-3 text-sm text-gray-500 text-center">No candidates found</div>
+                  ) : (
+                    <div className="divide-y dark:divide-gray-700">
+                      <div className="p-2 bg-gray-50 dark:bg-gray-800 flex items-center justify-between">
+                        <button 
+                          onClick={() => {
+                            if (selectedCandidates.length === filteredCandidates.length) {
+                              setSelectedCandidates([]);
+                            } else {
+                              setSelectedCandidates(filteredCandidates.map(c => c._id));
+                            }
+                          }}
+                          className="text-xs text-blue-600 font-medium hover:underline"
+                        >
+                          {selectedCandidates.length === filteredCandidates.length ? 'Deselect All' : 'Select All Filtered'}
+                        </button>
+                        <span className="text-[10px] text-gray-400 uppercase font-bold tracking-wider">
+                          {filteredCandidates.length} Found
+                        </span>
+                      </div>
+                      {filteredCandidates.map((c) => (
+                        <div 
+                          key={c._id} 
+                          className={`flex items-center p-3 hover:bg-gray-50 dark:hover:bg-gray-800 cursor-pointer transition-colors ${
+                            selectedCandidates.includes(c._id) ? 'bg-blue-50 dark:bg-blue-900/10' : ''
+                          }`}
+                          onClick={() => toggleCandidate(c._id)}
+                        >
+                          <div className={`w-5 h-5 rounded border flex items-center justify-center mr-3 transition-all ${
+                            selectedCandidates.includes(c._id) ? 'bg-blue-600 border-blue-600' : 'border-gray-300 bg-white dark:bg-gray-700'
+                          }`}>
+                            {selectedCandidates.includes(c._id) && <CheckCircle className="h-3.5 w-3.5 text-white" />}
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <p className="text-sm font-medium text-gray-900 dark:text-white truncate">
+                              {c.user?.name || "No name"}
+                            </p>
+                            <p className="text-xs text-gray-500 truncate">
+                              ATS: {c.atsScore ?? 0}% • {c.user?.email}
+                            </p>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </div>
 
-              <label className="text-sm">Select Job</label>
-              <select
-                className="w-full p-2 rounded-md bg-white dark:bg-gray-700 border mb-3"
-                value={selectedJob}
-                onChange={(e) => setSelectedJob(e.target.value)}
-              >
-                <option value="">Choose...</option>
-                {jobs.map((j) => (
-                  <option key={j._id} value={j._id}>
-                    {j.title}
-                  </option>
-                ))}
-              </select>
+              <div>
+                <label className="text-sm font-medium mb-2 block">Select Job Posting</label>
+                <select
+                  className="w-full p-2 rounded-md bg-white dark:bg-gray-700 border focus:ring-2 focus:ring-primary/20 outline-none"
+                  value={selectedJob}
+                  onChange={(e) => setSelectedJob(e.target.value)}
+                >
+                  <option value="">Choose a job...</option>
+                  {jobs.map((j) => (
+                    <option key={j._id} value={j._id}>
+                      {j.title}
+                    </option>
+                  ))}
+                </select>
+              </div>
 
               <button
                 onClick={handleAssignQuiz}
-                className="btn-purple w-full mt-2"
+                disabled={assigningQuiz || selectedCandidates.length === 0 || !selectedJob}
+                className="btn-purple w-full py-3 font-semibold shadow-lg disabled:opacity-50 flex items-center justify-center gap-2"
               >
-                {assigningQuiz ? "Assigning..." : "Assign Quiz"}
+                {assigningQuiz ? (
+                  <>
+                    <div className="animate-spin h-4 w-4 border-2 border-white border-t-transparent rounded-full" />
+                    <span>Assigning to {selectedCandidates.length} candidates...</span>
+                  </>
+                ) : (
+                  `Assign Quiz to ${selectedCandidates.length} Candidate${selectedCandidates.length !== 1 ? 's' : ''}`
+                )}
               </button>
             </div>
           )}

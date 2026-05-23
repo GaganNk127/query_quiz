@@ -184,6 +184,38 @@ export default function CandidateDetails() {
   const latestAttempt = candidate?.quizAttempts?.filter(a => a.status === 'completed')
     .sort((a, b) => new Date(b.completedAt) - new Date(a.completedAt))[0];
 
+  // Calculate proctoring summary
+  const proctoringStats = (() => {
+    if (!candidate?.proctoringLog) return { violations: {}, complianceScore: 100 };
+    
+    const logs = candidate.proctoringLog;
+    const violations = {};
+    logs.forEach(log => {
+      violations[log.type] = (violations[log.type] || 0) + 1;
+    });
+
+    // Simple compliance score calculation
+    const totalViolations = Object.values(violations).reduce((a, b) => a + b, 0);
+    const score = Math.max(0, 100 - (totalViolations * 5));
+    
+    return { violations, complianceScore: score };
+  })();
+
+  // Group proctoring logs by quizId
+  const logsByQuiz = (() => {
+    if (!candidate?.proctoringLog) return {};
+    const grouped = {};
+    candidate.proctoringLog.forEach(log => {
+      if (!grouped[log.quizId]) grouped[log.quizId] = [];
+      grouped[log.quizId].push(log);
+    });
+    return grouped;
+  })();
+
+  const latestCheatingQuizId = candidate?.cheatedQuizzes?.length > 0 
+    ? candidate.cheatedQuizzes[candidate.cheatedQuizzes.length - 1].quizId 
+    : null;
+
   const detailedQuizResults = latestAttempt?.answers?.map(ans => {
     // Find the question in assignments
     let questionText = 'Question details not available';
@@ -538,26 +570,35 @@ export default function CandidateDetails() {
 
           {activeTab === 'proctoring' && (
             <div className="space-y-6">
-              <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-                Proctoring Report
-              </h3>
+              <div className="flex items-center justify-between">
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+                  Proctoring Report
+                </h3>
+                {candidate.cheatingStatus === 'rejected_cheating' && (
+                  <span className="flex items-center px-3 py-1 bg-red-100 text-red-800 rounded-full text-xs font-bold animate-pulse">
+                    <AlertTriangle className="h-4 w-4 mr-1" />
+                    REJECTED FOR CHEATING
+                  </span>
+                )}
+              </div>
 
               {candidate.proctoringLog && candidate.proctoringLog.length > 0 ? (
-                <div className="space-y-4">
+                <div className="space-y-6">
+                  {/* Summary Stats */}
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div>
+                    <div className="bg-white dark:bg-gray-900 rounded-lg p-5 border">
                       <h4 className="font-medium text-gray-900 dark:text-white mb-3">
-                        Violations Summary
+                        Total Violations Summary
                       </h4>
                       <div className="space-y-2">
-                        {Object.entries(candidate.proctoringStats?.violations || {})
+                        {Object.entries(proctoringStats.violations)
                           .filter(([type]) => type !== 'no_face' && type !== 'head_turned')
                           .map(([type, count]) => (
-                          <div key={type} className="flex justify-between">
+                          <div key={type} className="flex justify-between items-center text-sm">
                             <span className="text-gray-600 dark:text-gray-400 capitalize">
-                              {type.replace('_', ' ')}
+                              {type.replace(/_/g, ' ')}
                             </span>
-                            <span className={`font-medium ${count > 0 ? 'text-red-600' : 'text-green-600'}`}>
+                            <span className={`px-2 py-0.5 rounded-full font-bold ${count > 0 ? 'bg-red-100 text-red-700' : 'bg-green-100 text-green-700'}`}>
                               {count}
                             </span>
                           </div>
@@ -565,46 +606,102 @@ export default function CandidateDetails() {
                       </div>
                     </div>
 
-                    <div>
+                    <div className="bg-white dark:bg-gray-900 rounded-lg p-5 border text-center flex flex-col justify-center">
                       <h4 className="font-medium text-gray-900 dark:text-white mb-3">
-                        Compliance Score
+                        Overall Compliance
                       </h4>
-                      <div className={`text-center p-4 rounded-lg ${getScoreBgColor(candidate.proctoringStats?.complianceScore || 100)}`}>
-                        <div className={`text-2xl font-bold ${getScoreColor(candidate.proctoringStats?.complianceScore || 100)}`}>
-                          {candidate.proctoringStats?.complianceScore || 100}%
-                        </div>
+                      <div className={`text-4xl font-bold ${getScoreColor(proctoringStats.complianceScore)}`}>
+                        {proctoringStats.complianceScore}%
                       </div>
+                      <p className="text-xs text-gray-500 mt-2">Based on violation frequency</p>
                     </div>
                   </div>
 
+                  {/* Latest Cheating Incident Highlight */}
+                  {latestCheatingQuizId && (
+                    <div className="bg-red-50 dark:bg-red-900/10 border-2 border-red-200 dark:border-red-800 rounded-lg p-5">
+                      <div className="flex items-center space-x-2 mb-4 text-red-700 dark:text-red-400">
+                        <AlertTriangle className="h-5 w-5" />
+                        <h4 className="font-bold text-lg">Latest Cheating Incident Reported</h4>
+                      </div>
+                      
+                      <div className="bg-white dark:bg-gray-900 rounded-md border p-3">
+                        <div className="flex justify-between items-start mb-3">
+                          <div>
+                            <p className="text-sm font-bold text-gray-900 dark:text-white">
+                              Quiz ID: <span className="font-mono text-xs">{latestCheatingQuizId}</span>
+                            </p>
+                            <p className="text-xs text-gray-500">
+                              Detected at: {formatDate(candidate.cheatedQuizzes.find(q => q.quizId === latestCheatingQuizId)?.cheatedAt)}
+                            </p>
+                          </div>
+                        </div>
+
+                        <div className="space-y-1 mt-3">
+                          <p className="text-xs font-semibold text-gray-500 uppercase mb-2">Specific Violations for this Quiz:</p>
+                          {(logsByQuiz[latestCheatingQuizId] || [])
+                            .filter(event => event.type !== 'no_face' && event.type !== 'head_turned')
+                            .map((event, idx) => (
+                            <div key={idx} className="flex items-center justify-between p-2 hover:bg-gray-50 dark:hover:bg-gray-800 rounded transition-colors border-l-4 border-red-500">
+                              <span className="text-sm font-medium capitalize text-red-700 dark:text-red-400">
+                                {event.type.replace(/_/g, ' ')}
+                              </span>
+                              <span className="text-xs text-gray-400">
+                                {new Date(event.timestamp).toLocaleTimeString()}
+                              </span>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* All Events History */}
                   <div>
                     <h4 className="font-medium text-gray-900 dark:text-white mb-3">
-                      Proctoring Events
+                      Event History (All Quizzes)
                     </h4>
-                    <div className="space-y-2 max-h-64 overflow-y-auto">
-                      {candidate.proctoringLog
-                        .filter(event => event.type !== 'no_face' && event.type !== 'head_turned')
-                        .map((event, index) => (
-                        <div key={index} className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-900 rounded">
-                          <div className="flex items-center space-x-3">
-                            <AlertTriangle className="h-4 w-4 text-yellow-500" />
-                            <span className="text-sm text-gray-700 dark:text-gray-300">
-                              {event.type.replace('_', ' ')}
-                            </span>
+                    <div className="space-y-3 max-h-80 overflow-y-auto pr-2">
+                      {Object.keys(logsByQuiz).reverse().map(quizId => (
+                        <div key={quizId} className="space-y-1">
+                          <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest ml-1">Quiz: {quizId}</p>
+                          <div className="space-y-1">
+                            {logsByQuiz[quizId]
+                              .filter(event => event.type !== 'no_face' && event.type !== 'head_turned')
+                              .map((event, index) => (
+                              <div key={index} className="flex items-center justify-between p-3 bg-white dark:bg-gray-900 border rounded shadow-sm hover:shadow-md transition-shadow">
+                                <div className="flex items-center space-x-3">
+                                  <div className="p-1.5 bg-yellow-50 dark:bg-yellow-900/20 rounded">
+                                    <AlertTriangle className="h-4 w-4 text-yellow-500" />
+                                  </div>
+                                  <div>
+                                    <span className="text-sm font-medium text-gray-800 dark:text-gray-200 capitalize">
+                                      {event.type.replace(/_/g, ' ')}
+                                    </span>
+                                    {event.duration > 0 && (
+                                      <p className="text-[10px] text-gray-500">Duration: {event.duration}s</p>
+                                    )}
+                                  </div>
+                                </div>
+                                <span className="text-xs text-gray-500 dark:text-gray-400 font-mono">
+                                  {new Date(event.timestamp).toLocaleTimeString()}
+                                </span>
+                              </div>
+                            ))}
                           </div>
-                          <span className="text-xs text-gray-500 dark:text-gray-400">
-                            {new Date(event.timestamp).toLocaleTimeString()}
-                          </span>
                         </div>
                       ))}
                     </div>
                   </div>
                 </div>
               ) : (
-                <div className="text-center py-12">
-                  <Eye className="h-16 w-16 text-gray-400 mx-auto mb-4" />
-                  <p className="text-gray-600 dark:text-gray-400">
-                    No proctoring data available
+                <div className="text-center py-12 bg-gray-50 dark:bg-gray-900/50 rounded-xl border border-dashed">
+                  <Eye className="h-16 w-16 text-gray-300 mx-auto mb-4" />
+                  <p className="text-gray-600 dark:text-gray-400 font-medium">
+                    No proctoring data available for this candidate
+                  </p>
+                  <p className="text-sm text-gray-400 mt-1">
+                    Compliance monitoring starts when the candidate begins a quiz
                   </p>
                 </div>
               )}
